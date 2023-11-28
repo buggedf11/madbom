@@ -1,29 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Weather</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #333;
+            color: #fff;
+            font-size: 80px;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #clock {
+            margin-bottom: 20px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+    </style>
 </head>
 <body>
-  <h1>Weather</h1>
-  <div id="weather"></div>
+    <h1>Weather</h1>
+    <div id="weather"></div>
 
-  <script>
-    $(document).ready(function() {
-      var apiKey = "6fea4e652e33b3554f62b39a53bc155f";
-      var cityName = "Droitwich";
+    <script>
+        $(document).ready(function() {
+            var apiKey = "6fea4e652e33b3554f62b39a53bc155f";
+            var cityName = "Droitwich";
 
-      // get api data
-      $.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`, function(data) {
-        // extract info
-        var temperature = data.main.temp;
-        var description = data.weather[0].description;
+            // get api data
+            $.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`, function(data) {
+                // extract info
+                var temperature = data.main.temp;
+                var description = data.weather[0].description;
 
-        // display info
-        var weatherElement = document.getElementById("weather");
-        weatherElement.innerHTML = "Temperature: " + temperature + "°C<br>Description: " + description;
-      });
-    });
-  </script>
+                // display info
+                var weatherElement = document.getElementById("weather");
+                weatherElement.innerHTML = "Temperature: " + temperature + "°C<br>Description: " + description;
+            });
+        });
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+    <button class="back-button" onclick="goBack()">Back</button>
 </body>
 </html>
