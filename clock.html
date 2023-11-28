@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock Page</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #333;
+            color: #fff;
+            font-size: 80px; /* Increased font-size */
+            margin: 0;
+            font-family: Arial, sans-serif; /* Added font-family */
+        }
+
+        #clock {
+            margin-bottom: 20px;
+            font-weight: bold; /* Added font-weight */
+            letter-spacing: 2px; /* Added letter-spacing */
+        }
+
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px; /* Changed right to left */
+            padding: 10px;
+            font-size: 16px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="goBack()">Back</button> <!-- Moved back button to the top left -->
+    <div id="clock">00:00:00</div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function updateClock() {
+            var clockElement = document.getElementById("clock");
+            setInterval(function() {
+                var date = new Date();
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var seconds = date.getSeconds();
+                var timeString = formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds);
+                clockElement.textContent = timeString;
+            }, 1000);
+        }
+
+        function formatTime(time) {
+            return time < 10 ? "0" + time : time;
+        }
+
+        updateClock();
+    </script>
+</body>
+</html>
