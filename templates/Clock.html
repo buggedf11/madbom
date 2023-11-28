@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clock Page</title>
+    <title>Clock</title>
     <style>
         body {
             display: flex;
@@ -13,21 +13,21 @@
             height: 100vh;
             background-color: #333;
             color: #fff;
-            font-size: 80px; /* Increased font-size */
+            font-size: 80px;
             margin: 0;
-            font-family: Arial, sans-serif; /* Added font-family */
+            font-family: Arial, sans-serif;
         }
 
         #clock {
             margin-bottom: 20px;
-            font-weight: bold; /* Added font-weight */
-            letter-spacing: 2px; /* Added letter-spacing */
+            font-weight: bold;
+            letter-spacing: 2px;
         }
 
         .back-button {
             position: absolute;
             top: 10px;
-            left: 10px; /* Changed right to left */
+            left: 10px;
             padding: 10px;
             font-size: 16px;
             background-color: #333;
@@ -45,8 +45,8 @@
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="goBack()">Back</button> <!-- Moved back button to the top left -->
-    <div id="clock">00:00:00</div>
+    <button class="back-button" onclick="goBack()">Back</button>
+    <div id="Clock">00:00:00</div>
 
     <script>
         function goBack() {
@@ -54,14 +54,14 @@
         }
 
         function updateClock() {
-            var clockElement = document.getElementById("clock");
+            var ClockElement = document.getElementById("Clock");
             setInterval(function() {
                 var date = new Date();
                 var hours = date.getHours();
                 var minutes = date.getMinutes();
                 var seconds = date.getSeconds();
                 var timeString = formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds);
-                clockElement.textContent = timeString;
+                ClockElement.textContent = timeString;
             }, 1000);
         }
 
