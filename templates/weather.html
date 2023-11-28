@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Weather</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h1>Weather</h1>
+  <div id="weather"></div>
+
+  <script>
+    $(document).ready(function() {
+      var apiKey = "6fea4e652e33b3554f62b39a53bc155f";
+      var cityName = "Droitwich";
+
+      // get api data
+      $.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`, function(data) {
+        // extract info
+        var temperature = data.main.temp;
+        var description = data.weather[0].description;
+
+        // display info
+        var weatherElement = document.getElementById("weather");
+        weatherElement.innerHTML = "Temperature: " + temperature + "°C<br>Description: " + description;
+      });
+    });
+  </script>
+</body>
+</html>

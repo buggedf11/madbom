@@ -9,7 +9,11 @@ def index():
 
 @app.route('/clock')
 def clock():
-    return render_template('Clock.html')
+    return render_template('clock.html')
+
+@app.route('/weather')
+def weather():
+    return render_template('weather.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
