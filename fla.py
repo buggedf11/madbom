@@ -1,5 +1,6 @@
 from flask import render_template
 from flask import Flask
+import psutil
 
 app = Flask(__name__)
 
@@ -21,7 +22,10 @@ def date():
 
 @app.route('/other')
 def other():
-    return render_template('other.html')
+    cpu_percent = psutil.cpu_percent()
+    memory_percent = psutil.virtual_memory().percent
+    disk_usage = psutil.disk_usage('/').percent
+    return render_template('other.html', cpu_percent=cpu_percent, memory_percent=memory_percent, disk_usage=disk_usage)
 
 if __name__ == '__main__':
     app.run(debug=False)

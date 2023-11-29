@@ -3,22 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Other Page</title>
     <style>
         body {
             overflow: hidden;
             background-color: #555;
             margin: 0;
             font-family: Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
         }
 
         .container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr;
             grid-gap: 20px;
             align-items: center;
             justify-content: center;
@@ -26,7 +22,7 @@
 
         .button {
             width: 150px;
-            height: 150px;
+            height: 100px; /* Changed height to make it rectangular */
             margin: 0;
             padding: 10px;
             font-size: 16px;
@@ -65,12 +61,32 @@
 </head>
 <body>
     <button class="back-button" onclick="goBack()">Back</button>
-    <div id="date"></div>
+
+    <div class="container">
+        <div class="button" id="cpu_percent">CPU Usage: </div>
+    </div>
+    <div class="container">
+        <div class="button" id="memory_percent">Memory Usage: </div>
+    </div>
+    <div class="container">
+        <div class="button" id="disk_usage">Disk Usage: </div>
+    </div>
+
     <script>
+        // Example values for CPU usage, memory usage, and disk usage
+        let cpuPercent = 50;
+        let memoryPercent = 80;
+        let diskUsage = 70;
+
+        setInterval(() => {
+            document.getElementById("cpu_percent").textContent = "CPU Usage: " + cpuPercent + "%";
+            document.getElementById("memory_percent").textContent = "Memory Usage: " + memoryPercent + "%";
+            document.getElementById("disk_usage").textContent = "Disk Usage: " + diskUsage + "%";
+        }, 1000);
+
         function goBack() {
             window.history.back();
         }
     </script>
-
 </body>
 </html>
