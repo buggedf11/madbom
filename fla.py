@@ -19,5 +19,9 @@ def weather():
 def date():
     return render_template('Date.html')
 
+@app.route('/other')
+def other():
+    return render_template('other.html')
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

@@ -49,7 +49,7 @@
         <button class="button" onclick="goToClockPage()">Clock</button>
         <button class="button" onclick="goToDatePage()">Date</button>
         <button class="button" onclick="goToWeatherPage()">Weather</button>
-        <button class="button">Other Stuff</button>
+        <button class="button" onclick="goTootherPage()">other</button>
     </div>
 
     <script>
@@ -59,6 +59,10 @@
 
         function goToWeatherPage() {
             window.location.href = "weather";
+        }
+
+        function goTootherPage() {
+            window.location.href = "other";
         }
 
         function goToDatePage() {
