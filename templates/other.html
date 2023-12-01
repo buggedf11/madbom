@@ -13,16 +13,19 @@
         }
 
         .container {
-            display: grid;
-            grid-template-columns: 1fr;
-            grid-gap: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .button {
-            width: 150px;
-            height: 100px; /* Changed height to make it rectangular */
+            width: 200px;
+            height: 100px;
             margin: 0;
             padding: 10px;
             font-size: 16px;
@@ -30,7 +33,7 @@
             border-radius: 10px;
             background-color: #333;
             color: #fff;
-            cursor: pointer;
+            cursor: move;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             transition: all 0.3s ease;
         }
@@ -57,35 +60,87 @@
         .back-button:hover {
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
         }
+
+        /* Add style for the container during drag and drop */
+        .container-drag-over {
+            background-color: #555;
+        }
+
+        /* Add transition for smoother dragging */
+        .dragging {
+            transition: none;
+        }
     </style>
 </head>
 <body>
     <button class="back-button" onclick="goBack()">Back</button>
-
-    <div class="container">
-        <div class="button" id="cpu_percent">CPU Usage: </div>
-    </div>
-    <div class="container">
-        <div class="button" id="memory_percent">Memory Usage: </div>
-    </div>
-    <div class="container">
-        <div class="button" id="disk_usage">Disk Usage: </div>
+    <div class="container" id="drag-container">
+        <div class="button" id="cpu_percent" draggable="true" ondragstart="dragStart(event)">CPU Usage: {{ cpu_percent }}%</div>
+        <div class="button" id="memory_percent" draggable="true" ondragstart="dragStart(event)">Memory Usage: {{ memory_percent }}%</div>
+        <div class="button" id="disk_usage" draggable="true" ondragstart="dragStart(event)">Disk Usage: {{ disk_usage }}%</div>
+        <div class="button" id="network_bytes_sent" draggable="true" ondragstart="dragStart(event)">Network Bytes Sent: {{ network_bytes_sent }}</div>
+        <div class="button" id="network_bytes_received" draggable="true" ondragstart="dragStart(event)">Network Bytes Received: {{ network_bytes_received }}</div>
     </div>
 
     <script>
-        // Example values for CPU usage, memory usage, and disk usage
-        let cpuPercent = 50;
-        let memoryPercent = 80;
-        let diskUsage = 70;
+        // Example values for CPU usage, memory usage, disk usage, network bytes sent, and network bytes received
+        let cpuPercent = {{ cpu_percent }};
+        let memoryPercent = {{ memory_percent }};
+        let diskUsage = {{ disk_usage }};
+        let networkBytesSent = {{ network_bytes_sent }};
+        let networkBytesReceived = {{ network_bytes_received }};
 
         setInterval(() => {
             document.getElementById("cpu_percent").textContent = "CPU Usage: " + cpuPercent + "%";
             document.getElementById("memory_percent").textContent = "Memory Usage: " + memoryPercent + "%";
             document.getElementById("disk_usage").textContent = "Disk Usage: " + diskUsage + "%";
+            document.getElementById("network_bytes_sent").textContent = "Network Bytes Sent: " + networkBytesSent;
+            document.getElementById("network_bytes_received").textContent = "Network Bytes Received: " + networkBytesReceived;
         }, 1000);
 
-        function goBack() {
-            window.history.back();
+        // Add event listeners for drag and drop to the container
+        const dragContainer = document.getElementById("drag-container");
+        dragContainer.addEventListener("dragover", dragOver);
+        dragContainer.addEventListener("dragenter", dragEnter);
+        dragContainer.addEventListener("dragleave", dragLeave);
+        dragContainer.addEventListener("drop", drop);
+
+        function dragStart(event) {
+            event.dataTransfer.setData("text/plain", event.target.id);
+            event.target.classList.add("dragging"); // Add dragging class for smoother transition
+        }
+
+        function dragOver(event) {
+            event.preventDefault();
+        }
+
+        function dragEnter(event) {
+            event.preventDefault();
+            event.target.classList.add("container-drag-over");
+        }
+
+        function dragLeave(event) {
+            event.preventDefault();
+            event.target.classList.remove("container-drag-over");
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            event.target.classList.remove("container-drag-over");
+
+            const sourceButtonId = event.dataTransfer.getData("text/plain");
+            const sourceButton = document.getElementById(sourceButtonId);
+
+            // Update the position of the existing button with transition
+            sourceButton.style.transition = "all 0.3s ease";
+            sourceButton.style.position = "absolute";
+            sourceButton.style.left = (event.clientX - sourceButton.offsetWidth / 2) + "px";
+            sourceButton.style.top = (event.clientY - sourceButton.offsetHeight / 2) + "px";
+
+            // Remove dragging class after transition
+            setTimeout(() => {
+                sourceButton.classList.remove("dragging");
+            }, 300);
         }
     </script>
 </body>
