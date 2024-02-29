@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,6 +37,7 @@
             cursor: move;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .button:hover {
@@ -61,19 +63,25 @@
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
         }
 
-        /* Add style for the container during drag and drop */
+        .line {
+            position: absolute;
+            border: 1px solid #fff;
+            pointer-events: none;
+            z-index: -1; /* Ensure the lines are behind the buttons */
+        }
+
         .container-drag-over {
             background-color: #555;
         }
 
-        /* Add transition for smoother dragging */
         .dragging {
             transition: none;
         }
     </style>
 </head>
+
 <body>
-    <button class="back-button" onclick="goBack()">Back</button>
+    <button class="back-button" onclick="window.location.href = 'index.html'">Back</button>
     <div class="container" id="drag-container">
         <div class="button" id="cpu_percent" draggable="true" ondragstart="dragStart(event)">CPU Usage: {{ cpu_percent }}%</div>
         <div class="button" id="memory_percent" draggable="true" ondragstart="dragStart(event)">Memory Usage: {{ memory_percent }}%</div>
@@ -83,13 +91,6 @@
     </div>
 
     <script>
-        // Example values for CPU usage, memory usage, disk usage, network bytes sent, and network bytes received
-        let cpuPercent = {{ cpu_percent }};
-        let memoryPercent = {{ memory_percent }};
-        let diskUsage = {{ disk_usage }};
-        let networkBytesSent = {{ network_bytes_sent }};
-        let networkBytesReceived = {{ network_bytes_received }};
-
         setInterval(() => {
             document.getElementById("cpu_percent").textContent = "CPU Usage: " + cpuPercent + "%";
             document.getElementById("memory_percent").textContent = "Memory Usage: " + memoryPercent + "%";
@@ -98,16 +99,66 @@
             document.getElementById("network_bytes_received").textContent = "Network Bytes Received: " + networkBytesReceived;
         }, 1000);
 
-        // Add event listeners for drag and drop to the container
         const dragContainer = document.getElementById("drag-container");
         dragContainer.addEventListener("dragover", dragOver);
         dragContainer.addEventListener("dragenter", dragEnter);
         dragContainer.addEventListener("dragleave", dragLeave);
         dragContainer.addEventListener("drop", drop);
 
+        let isConnecting = false;
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "f" || event.key === "F") {
+                isConnecting = !isConnecting;
+                updateConnections();
+            }
+        });
+
+        function updateConnections() {
+            const container = document.getElementById("drag-container");
+            const buttons = container.getElementsByClassName("button");
+            const lines = document.getElementsByClassName("line");
+
+            while (lines.length > 0) {
+                lines[0].parentNode.removeChild(lines[0]);
+            }
+
+            if (isConnecting) {
+                for (let i = 0; i < buttons.length; i++) {
+                    const button1 = buttons[i];
+
+                    for (let j = i + 1; j < buttons.length; j++) {
+                        const button2 = buttons[j];
+
+                        const line = document.createElement("div");
+                        line.classList.add("line");
+                        line.style.backgroundColor = "#fff";
+
+                        const startX = button1.offsetLeft + button1.offsetWidth / 2;
+                        const startY = button1.offsetTop + button1.offsetHeight / 2;
+                        const endX = button2.offsetLeft + button2.offsetWidth / 2;
+                        const endY = button2.offsetTop + button2.offsetHeight / 2;
+
+                        drawLine(line, startX, startY, endX, endY);
+                        container.appendChild(line);
+                    }
+                }
+            }
+        }
+
+        function drawLine(line, startX, startY, endX, endY) {
+            const angle = Math.atan2(endY - startY, endX - startX);
+            const length = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+
+            line.style.width = length + "px";
+            line.style.transform = `rotate(${angle}rad)`;
+            line.style.left = startX + "px";
+            line.style.top = startY + "px";
+        }
+
         function dragStart(event) {
             event.dataTransfer.setData("text/plain", event.target.id);
-            event.target.classList.add("dragging"); // Add dragging class for smoother transition
+            event.target.classList.add("dragging");
         }
 
         function dragOver(event) {
@@ -131,17 +182,17 @@
             const sourceButtonId = event.dataTransfer.getData("text/plain");
             const sourceButton = document.getElementById(sourceButtonId);
 
-            // Update the position of the existing button with transition
             sourceButton.style.transition = "all 0.3s ease";
             sourceButton.style.position = "absolute";
             sourceButton.style.left = (event.clientX - sourceButton.offsetWidth / 2) + "px";
             sourceButton.style.top = (event.clientY - sourceButton.offsetHeight / 2) + "px";
 
-            // Remove dragging class after transition
             setTimeout(() => {
                 sourceButton.classList.remove("dragging");
+                updateConnections();
             }, 300);
         }
     </script>
 </body>
+
 </html>

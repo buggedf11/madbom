@@ -43,6 +43,28 @@
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
         }
 
+        .settings-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 150px;
+            height: 150px;
+            margin: 0;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            background-color: #333;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .settings-button:hover {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+
         /* Media queries for responsive design */
         @media only screen and (max-width: 600px) {
             .container {
@@ -67,6 +89,8 @@
         <button class="button" onclick="goTootherPage()">other</button>
     </div>
 
+    <button class="settings-button" onclick="goToSettingsPage()">Settings</button>
+
     <script>
         function goToClockPage() {
             window.location.href = "clock";
@@ -83,6 +107,11 @@
         function goToDatePage() {
             window.location.href = "date";
         }
+
+        function goToSettingsPage() {
+            window.location.href = "settings";
+        }
     </script>
 </body>
 </html>
+
