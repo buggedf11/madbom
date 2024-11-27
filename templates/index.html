@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .widget {
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <h1>My Dashboard</h1>
+    
+    <div class="container">
+        <div class="widget" id="datetime">
+            <h2>Date & Time</h2>
+            <div id="current-datetime"></div>
+        </div>
+
+        <div class="widget" id="weather">
+            <h2>Weather</h2>
+            <div id="weather-info">Loading weather...</div>
+        </div>
+
+        <div class="widget" id="calendar">
+            <h2>Google Calendar</h2>
+            <iframe src="https://calendar.google.com/calendar/embed?src=arecardo8@gmail.com" 
+                    style="border: 0" width="100%" height="400" frameborder="0" scrolling="no">
+            </iframe>
+        </div>
+    </div>
+
+    <script>
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('current-datetime').textContent = now.toLocaleString();
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        // Weather API call (you'll need to sign up for a weather API service)
+        // This is an example using OpenWeatherMap API
+        async function getWeather() {
+            const API_KEY = 'YOUR_API_KEY';
+            const city = 'Droitwich Spa';
+            try {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
+                const data = await response.json();
+                document.getElementById('weather-info').textContent = 
+                    `Temperature: ${data.main.temp}°C, ${data.weather[0].description}`;
+            } catch (error) {
+                document.getElementById('weather-info').textContent = 'Weather information unavailable';
+            }
+        }
+        getWeather();
+    </script>
+</body>
+</html>
