@@ -22,6 +22,11 @@
             border-radius: 8px;
             background-color: #f5f5f5;
         }
+        .slider-container {
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f5f5f5;
+        }
     </style>
 </head>
 <body>
@@ -52,14 +57,48 @@
             const now = new Date();
             document.getElementById('current-datetime').textContent = now.toLocaleString();
         }
+        // Add sliders for RGB background color
+        const body = document.body;
+        const sliderContainer = document.createElement('div');
+        sliderContainer.style.display = 'flex';
+        sliderContainer.style.justifyContent = 'center';
+        sliderContainer.style.gap = '20px';
+        
+        const colorSliders = ['red', 'green', 'blue'].map(color => {
+            const slider = document.createElement('input');
+            slider.type = 'range';
+            slider.style.setProperty('--track-color', color);
+            slider.min = 0;
+            slider.max = 255;
+            slider.value = 255;
+            slider.id = `${color}-slider`;
+            slider.style.transform = 'rotate(-90deg)';
+            slider.style.margin = '50px 0';
+            const label = document.createElement('label');
+            label.textContent = color + ': ';
+            const container = document.createElement('div');
+            container.appendChild(label);
+            container.appendChild(slider);
+            sliderContainer.appendChild(container);
+            slider.addEventListener('input', updateBackgroundColor);
+            return slider;
+        });
+        
+        document.querySelector('.container').prepend(sliderContainer);
+
+        function updateBackgroundColor() {
+            const [r, g, b] = colorSliders.map(slider => slider.value);
+            body.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        }
+        updateBackgroundColor();
         updateDateTime();
         setInterval(updateDateTime, 1000);
 
         // Weather API call (you'll need to sign up for a weather API service)
         // This is an example using OpenWeatherMap API
         async function getWeather() {
-            const API_KEY = 'YOUR_API_KEY';
-            const city = 'Droitwich Spa';
+            const API_KEY = '06f37b1bf31beb8060501481105fd6c5';
+            const city = 'Droitwich';
             try {
                 const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
                 const data = await response.json();
@@ -73,3 +112,7 @@
     </script>
 </body>
 </html>
+<div class="widget">
+    <h2>Sound Page</h2>
+    <button onclick="location.href='sound.html'">Go to Sound Page</button>
+</div></div>
