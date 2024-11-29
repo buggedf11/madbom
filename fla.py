@@ -9,9 +9,10 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/settings')
-def settings():
-    return render_template('settings.html')
+@app.route('/sound.html')
+def sound():
+    return render_template('sound.html')
+
 
 @app.route('/clock')
 def clock():

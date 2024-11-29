@@ -7,20 +7,49 @@
 </head>
 <body>
     <h1>Sound Frequency Slider</h1>
+
+    <!-- Play Button -->
     <button id="playButton">Play Sound</button>
-    <input type="range" id="frequencySlider" min="20" max="2000" value="440">
+
+    <!-- Frequency Slider -->
+    <input type="range" id="frequencySlider" min="20" max="20000" value="440">
     <label for="frequencySlider">Frequency: <span id="frequencyValue">440</span> Hz</label>
 
+    <!-- Waveform Selector -->
+    <label for="waveformSelector">Waveform:</label>
+    <select id="waveformSelector">
+        <option value="sine">Sine</option>
+        <option value="square">Square</option>
+        <option value="sawtooth">Sawtooth</option>
+        <option value="triangle">Triangle</option>
+    </select>
+
+    <!-- Volume Control -->
+    <label for="volumeSlider">Volume: <span id="volumeValue">50</span>%</label>
+    <input type="range" id="volumeSlider" min="0" max="100" value="50">
+
+    <!-- Visualizer -->
+    <canvas id="visualizer" width="600" height="100"></canvas>
+
     <script>
+        // Create Audio Context
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         let oscillator;
+        const gainNode = audioContext.createGain();
+        const analyser = audioContext.createAnalyser();
 
+        analyser.fftSize = 2048;
+
+        // Play/Stop Oscillator
         document.getElementById('playButton').addEventListener('click', () => {
             if (!oscillator) {
                 oscillator = audioContext.createOscillator();
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-                oscillator.connect(audioContext.destination);
+                oscillator.type = document.getElementById('waveformSelector').value;
+                oscillator.frequency.setValueAtTime(
+                    document.getElementById('frequencySlider').value,
+                    audioContext.currentTime
+                );
+                oscillator.connect(gainNode).connect(analyser).connect(audioContext.destination);
                 oscillator.start();
             } else {
                 oscillator.stop();
@@ -28,6 +57,7 @@
             }
         });
 
+        // Frequency Slider
         document.getElementById('frequencySlider').addEventListener('input', (event) => {
             const frequency = event.target.value;
             document.getElementById('frequencyValue').textContent = frequency;
@@ -35,6 +65,100 @@
                 oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
             }
         });
+
+        // Waveform Selector
+        document.getElementById('waveformSelector').addEventListener('change', (event) => {
+            if (oscillator) {
+                oscillator.type = event.target.value;
+            }
+        });
+
+        // Volume Slider
+        document.getElementById('volumeSlider').addEventListener('input', (event) => {
+            const volume = event.target.value / 100;
+            document.getElementById('volumeValue').textContent = event.target.value;
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+        });
+
+        // Visualizer
+        const canvas = document.getElementById('visualizer');
+        const canvasContext = canvas.getContext('2d');
+
+        function draw() {
+            requestAnimationFrame(draw);
+
+            const bufferLength = analyser.fftSize;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteTimeDomainData(dataArray);
+
+            canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+            canvasContext.lineWidth = 2;
+            canvasContext.strokeStyle = '#333';
+            canvasContext.beginPath();
+
+            const sliceWidth = canvas.width / bufferLength;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                const y = (dataArray[i] / 128.0) * (canvas.height / 2);
+                if (i === 0) {
+                    canvasContext.moveTo(x, y);
+                } else {
+                    canvasContext.lineTo(x, y);
+                }
+                x += sliceWidth;
+            }
+
+            canvasContext.lineTo(canvas.width, canvas.height / 2);
+            canvasContext.stroke();
+        }
+
+        draw();
     </script>
 </body>
 </html>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+    }
+
+    h1 {
+        color: #333;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
+
+    input[type="range"] {
+        width: 300px;
+        margin: 10px 0;
+    }
+
+    label {
+        font-size: 16px;
+        margin-right: 10px;
+    }
+
+    select {
+        padding: 5px;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    canvas {
+        border: 1px solid #ccc;
+        margin-top: 20px;
+    }
+</style>
