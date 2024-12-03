@@ -11,6 +11,7 @@
             margin: 0 auto;
             padding: 20px;
             text-align: center;
+            transition: background-color 0.3s, color 0.3s;
         }
         .container {
             display: grid;
@@ -21,16 +22,25 @@
             padding: 20px;
             border-radius: 8px;
             background-color: #f5f5f5;
+            transition: background-color 0.3s, color 0.3s;
         }
         .slider-container {
             padding: 20px;
             border-radius: 8px;
             background-color: #f5f5f5;
         }
+        .dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+        .dark-mode .widget {
+            background-color: #444;
+        }
     </style>
 </head>
 <body>
     <h1>My Dashboard</h1>
+    <button id="dark-mode-toggle">Toggle Dark Mode</button>
     
     <div class="container">
         <div class="widget" id="datetime">
@@ -57,12 +67,12 @@
     </div>
 
     <script>
-        // Update date and time
+        // date and time
         function updateDateTime() {
             const now = new Date();
             document.getElementById('current-datetime').textContent = now.toLocaleString();
         }
-        // Add sliders for RGB background color
+        // background color
         const body = document.body;
         const sliderContainer = document.createElement('div');
         sliderContainer.style.display = 'flex';
@@ -93,14 +103,17 @@
 
         function updateBackgroundColor() {
             const [r, g, b] = colorSliders.map(slider => slider.value);
-            body.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+            if (body.classList.contains('dark-mode')) {
+                body.style.backgroundColor = `rgb(${r / 2}, ${g / 2}, ${b / 2})`;
+            } else {
+                body.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+            }
         }
         updateBackgroundColor();
         updateDateTime();
         setInterval(updateDateTime, 1000);
 
-        // Weather API call (you'll need to sign up for a weather API service)
-        // This is an example using OpenWeatherMap API
+        // Weather API
         async function getWeather() {
             const API_KEY = '06f37b1bf31beb8060501481105fd6c5';
             const city = 'Droitwich';
@@ -114,6 +127,13 @@
             }
         }
         getWeather();
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            updateBackgroundColor();
+        });
     </script>
 </body>
 </html>

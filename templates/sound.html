@@ -4,9 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sound Frequency Slider</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #333;
+            color: #f0f0f0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        body.dark-mode h1 {
+            color: #f0f0f0;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            width: 300px;
+            margin: 10px 0;
+        }
+
+        label {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        select {
+            padding: 5px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+
+        body.dark-mode canvas {
+            border-color: #666;
+        }
+    </style>
 </head>
 <body>
     <h1>Sound Frequency Slider</h1>
+
+    <!-- Dark Mode Toggle -->
+    <button id="darkModeToggle">Toggle Dark Mode</button>
 
     <!-- Play Button -->
     <button id="playButton">Play Sound</button>
@@ -32,7 +93,7 @@
     <canvas id="visualizer" width="600" height="100"></canvas>
 
     <script>
-        // Create Audio Context
+        // Context
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         let oscillator;
         const gainNode = audioContext.createGain();
@@ -40,7 +101,7 @@
 
         analyser.fftSize = 2048;
 
-        // Play/Stop Oscillator
+        // Oscillator
         document.getElementById('playButton').addEventListener('click', () => {
             if (!oscillator) {
                 oscillator = audioContext.createOscillator();
@@ -114,51 +175,11 @@
         }
 
         draw();
+
+        // Dark Mode Toggle
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
     </script>
 </body>
 </html>
-
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        margin: 0;
-        background-color: #f0f0f0;
-    }
-
-    h1 {
-        color: #333;
-    }
-
-    button {
-        padding: 10px 20px;
-        font-size: 16px;
-        margin-bottom: 20px;
-        cursor: pointer;
-    }
-
-    input[type="range"] {
-        width: 300px;
-        margin: 10px 0;
-    }
-
-    label {
-        font-size: 16px;
-        margin-right: 10px;
-    }
-
-    select {
-        padding: 5px;
-        font-size: 16px;
-        margin-bottom: 20px;
-    }
-
-    canvas {
-        border: 1px solid #ccc;
-        margin-top: 20px;
-    }
-</style>
