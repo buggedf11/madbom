@@ -26,6 +26,9 @@ def weather():
 def date():
     return render_template('Date.html')
 
+@app.route('/Login.html')
+def login():
+    return render_template('Login.html')
 
 @app.route('/other')
 def other():
