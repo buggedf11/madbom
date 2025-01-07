@@ -136,7 +136,7 @@
 
         // Volume Slider
         document.getElementById('volumeSlider').addEventListener('input', (event) => {
-            const volume = event.target.value / 100;
+            const volume = event.target.value / 200;
             document.getElementById('volumeValue').textContent = event.target.value;
             gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
         });
