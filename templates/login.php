@@ -7,11 +7,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Dummy credentials for demonstration
     $valid_username = 'admin';
-    $valid_password = 'password';
+    $valid_password = 'admin';
 
     if ($username === $valid_username && $password === $valid_password) {
         $_SESSION['loggedin'] = true;
-        header('Location: sound.html');
+        header('Location: dash.html');
         exit();
     } else {
         $error = "Invalid username or password.";
