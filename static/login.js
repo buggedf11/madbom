@@ -11,6 +11,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     const messageDiv = document.getElementById('message');
     if (user) {
         messageDiv.textContent = 'Login successful';
+        window.location.href = 'main.html'; // Redirect to main.html
     } else {
         messageDiv.textContent = 'Invalid username or password';
     }
