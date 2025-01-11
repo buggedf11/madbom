@@ -10,5 +10,9 @@ def index():
 def main():
     return render_template('main.html')
 
+@app.route('/calendar.html')
+def calendar():
+    return render_template('calendar.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
