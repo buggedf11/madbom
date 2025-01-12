@@ -14,5 +14,9 @@ def main():
 def calendar():
     return render_template('calendar.html')
 
+@app.route('/sound.html')
+def sound():
+    return render_template('sound.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
