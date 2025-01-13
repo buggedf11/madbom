@@ -25,12 +25,12 @@ def downloads():
 
 @app.route('/api/files')
 def list_files():
-    files = os.listdir('static/downloads')  # Assuming your files are in a 'downloads' directory
+    files = os.listdir('static/downloads')  # Ensure this path is correct
     return jsonify(files)
 
 @app.route('/downloads/<filename>')
 def download_file(filename):
-    return send_from_directory('downloads', filename)
+    return send_from_directory('static/downloads', filename)  # Ensure this path is correct
 
 if __name__ == '__main__':
     app.run(debug=True)
