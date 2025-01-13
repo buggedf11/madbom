@@ -16,20 +16,10 @@
             height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
-            transition: background-color 0.3s, color 0.3s;
-        }
-    
-        body.dark-mode {
-            background-color: #333;
-            color: #f0f0f0;
         }
     
         h1 {
             color: #333;
-        }
-    
-        body.dark-mode h1 {
-            color: #f0f0f0;
         }
     
         button {
@@ -41,21 +31,13 @@
     
         /* New styles for wave visualizer */
         .wave-visualizer {
-            /* Default color */
             color: #000;
-        }
-    
-        body.dark-mode .wave-visualizer {
-            /* Color in dark mode */
-            color: #fff;
         }
     </style>
 </head>
 <body>
     <h1>Sound Frequency Slider</h1>
     <button onclick="location.href='main.html'">Home</button>
-    <!-- Dark Mode Toggle -->
-    <button id="darkModeToggle">Toggle Dark Mode</button>
 
     <!-- Play Button -->
     <button id="playButton">Play Sound</button>
@@ -163,11 +145,6 @@
         }
 
         draw();
-
-        // Dark Mode Toggle
-        document.getElementById('darkModeToggle').addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-        });
     </script>
 </body>
 </html>
