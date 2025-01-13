@@ -6,6 +6,7 @@
     <title>Sound Frequency Slider</title>
     <link rel="stylesheet" href="/static/styles.css">
     <style>
+        /* Existing styles */
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -17,50 +18,36 @@
             background-color: #f0f0f0;
             transition: background-color 0.3s, color 0.3s;
         }
-
+    
         body.dark-mode {
             background-color: #333;
             color: #f0f0f0;
         }
-
+    
         h1 {
             color: #333;
         }
-
+    
         body.dark-mode h1 {
             color: #f0f0f0;
         }
-
+    
         button {
             padding: 10px 20px;
             font-size: 16px;
             margin-bottom: 20px;
             cursor: pointer;
         }
-
-        input[type="range"] {
-            width: 300px;
-            margin: 10px 0;
+    
+        /* New styles for wave visualizer */
+        .wave-visualizer {
+            /* Default color */
+            color: #000;
         }
-
-        label {
-            font-size: 16px;
-            margin-right: 10px;
-        }
-
-        select {
-            padding: 5px;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-
-        canvas {
-            border: 1px solid #ccc;
-            margin-top: 20px;
-        }
-
-        body.dark-mode canvas {
-            border-color: #666;
+    
+        body.dark-mode .wave-visualizer {
+            /* Color in dark mode */
+            color: #fff;
         }
     </style>
 </head>
