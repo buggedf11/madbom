@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Downloads</title>
+    <script>
+        async function fetchFiles() {
+            const response = await fetch('/api/files');
+            const files = await response.json();
+            const fileList = document.getElementById('file-list');
+            files.forEach(file => {
+                const listItem = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = `/downloads/${file}`;
+                link.textContent = file;
+                listItem.appendChild(link);
+                fileList.appendChild(listItem);
+            });
+        }
+
+        window.onload = fetchFiles;
+    </script>
+</head>
+<body>
+    <h1>Downloads</h1>
+    <ul id="file-list"></ul>
+</body>
+</html>

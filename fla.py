@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, send_from_directory
+import os
 
 app = Flask(__name__)
 
@@ -17,6 +18,19 @@ def calendar():
 @app.route('/sound.html')
 def sound():
     return render_template('sound.html')
+
+@app.route('/downloads.html')
+def downloads():
+    return render_template('downloads.html')
+
+@app.route('/api/files')
+def list_files():
+    files = os.listdir('downloads')  # Assuming your files are in a 'downloads' directory
+    return jsonify(files)
+
+@app.route('/downloads/<filename>')
+def download_file(filename):
+    return send_from_directory('downloads', filename)
 
 if __name__ == '__main__':
     app.run(debug=True)
