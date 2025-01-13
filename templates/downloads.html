@@ -14,6 +14,7 @@
                 const link = document.createElement('a');
                 link.href = `/downloads/${file}`;
                 link.textContent = file;
+                link.download = file; // Add this line to ensure the file is downloaded
                 listItem.appendChild(link);
                 fileList.appendChild(listItem);
             });

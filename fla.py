@@ -25,7 +25,7 @@ def downloads():
 
 @app.route('/api/files')
 def list_files():
-    files = os.listdir('downloads')  # Assuming your files are in a 'downloads' directory
+    files = os.listdir('static/downloads')  # Assuming your files are in a 'downloads' directory
     return jsonify(files)
 
 @app.route('/downloads/<filename>')
