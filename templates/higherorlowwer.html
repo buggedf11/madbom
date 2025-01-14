@@ -39,22 +39,27 @@
     </div>
 
     <script>
-        const users = [
-            { username: "stan", password: "stan", balance: 100 },
-            { username: "alex", password: "alex", balance: 150 }
-        ];
-
-        const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
-        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-
+        let users = [];
+        let user = null;
         let deck = [];
         let currentCard = null;
-        let user = null;
-
+    
+        const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
+        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    
+        async function fetchUsers() {
+            try {
+                const response = await fetch('users.json');
+                users = await response.json();
+            } catch (error) {
+                console.error('Failed to fetch user data:', error);
+            }
+        }
+    
         function updateBalance() {
             document.getElementById('balance').innerText = `Balance: $${user.balance}`;
         }
-
+    
         function createDeck() {
             deck = [];
             for (let suit of suits) {
@@ -64,7 +69,7 @@
             }
             deck = shuffle(deck);
         }
-
+    
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -72,11 +77,11 @@
             }
             return array;
         }
-
+    
         function drawCard() {
             return deck.pop();
         }
-
+    
         function cardValue(card) {
             if (card.value === 'J') return 11;
             if (card.value === 'Q') return 12;
@@ -84,19 +89,19 @@
             if (card.value === 'A') return 14;
             return parseInt(card.value);
         }
-
+    
         function startGame() {
             createDeck();
             currentCard = drawCard();
             document.getElementById('currentCard').innerText = `${currentCard.value} of ${currentCard.suit}`;
             document.getElementById('result').innerText = '';
         }
-
+    
         function guess(higherOrLower) {
             const nextCard = drawCard();
             const currentCardValue = cardValue(currentCard);
             const nextCardValue = cardValue(nextCard);
-
+    
             let result = '';
             if ((higherOrLower === 'higher' && nextCardValue > currentCardValue) ||
                 (higherOrLower === 'lower' && nextCardValue < currentCardValue)) {
@@ -106,19 +111,19 @@
                 result = 'Wrong!';
                 user.balance -= 10; // Deduct money for wrong guess
             }
-
+    
             currentCard = nextCard;
             document.getElementById('currentCard').innerText = `${currentCard.value} of ${currentCard.suit}`;
             document.getElementById('result').innerText = result;
             updateBalance();
         }
-
-        function login() {
+    
+        async function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-
+    
             user = users.find(u => u.username === username && u.password === password);
-
+    
             if (user) {
                 document.getElementById('login').style.display = 'none';
                 document.getElementById('game').style.display = 'block';
@@ -128,6 +133,9 @@
                 alert('Invalid username or password');
             }
         }
-    </script>
+    
+        // Fetch users on page load
+        window.onload = fetchUsers;
+    </script>    
 </body>
 </html>
