@@ -54,4 +54,4 @@ def get_users():
     return send_from_directory('static', 'users.json')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port = 3000)

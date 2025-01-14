@@ -68,7 +68,7 @@
             shuffleDeck(deck);
             currentCard = drawCard();
             document.getElementById('currentCard').innerText = currentCard.value + ' of ' + currentCard.suit;
-            document.getElementById('balance').innerText = 'Balance: $100';
+            document.getElementById('balance').innerText = 'Balance: $' + user.balance;
         }
 
         function createDeck() {
