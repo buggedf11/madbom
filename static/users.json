@@ -1,12 +1,4 @@
 [
-    {
-        "username1": "Stan",
-        "password1": "Stan",
-        "money": 1000
-    },
-    {
-        "username2": "alex",
-        "password2": "GEMnec2152",
-        "money": 1000
-    }
+    { "username": "stan", "password": "stan" },
+    { "username": "alex", "password": "alex" }
 ]
