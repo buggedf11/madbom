@@ -28,30 +28,30 @@
     <h1>Downloads</h1>
     <button onclick="location.href='main.html'">Home</button>
     <ul id="file-list"></ul>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" id="file-input" name="file">
+        <button type="button" onclick="uploadFile()">Upload</button>
+    </form>
+
+    <script>
+        async function uploadFile() {
+            const fileInput = document.getElementById('file-input');
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert('File uploaded successfully');
+                location.reload();
+            } else {
+                alert('File upload failed');
+            }
+        }
+    </script>
 </body>
 </html>
-<form id="upload-form" enctype="multipart/form-data">
-    <input type="file" id="file-input" name="file">
-    <button type="button" onclick="uploadFile()">Upload</button>
-</form>
-
-<script>
-    async function uploadFile() {
-        const fileInput = document.getElementById('file-input');
-        const file = fileInput.files[0];
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const response = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (response.ok) {
-            alert('File uploaded successfully');
-            fetchFiles(); // Refresh the file list
-        } else {
-            alert('File upload failed');
-        }
-    }
-</script>
