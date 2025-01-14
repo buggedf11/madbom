@@ -15,7 +15,7 @@
                 const link = document.createElement('a');
                 link.href = `/downloads/${file}`;
                 link.textContent = file;
-                link.download = file; // Add this line to ensure the file is downloaded
+                link.download = file; 
                 listItem.appendChild(link);
                 fileList.appendChild(listItem);
             });
@@ -30,3 +30,28 @@
     <ul id="file-list"></ul>
 </body>
 </html>
+<form id="upload-form" enctype="multipart/form-data">
+    <input type="file" id="file-input" name="file">
+    <button type="button" onclick="uploadFile()">Upload</button>
+</form>
+
+<script>
+    async function uploadFile() {
+        const fileInput = document.getElementById('file-input');
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            alert('File uploaded successfully');
+            fetchFiles(); // Refresh the file list
+        } else {
+            alert('File upload failed');
+        }
+    }
+</script>
