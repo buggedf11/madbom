@@ -1,108 +1,121 @@
+let users = [];
+let user = null;
+let deck = [];
+let currentCard = null;
+let previousCard = null;
 
-        let users = [];
-        let user = null;
-        let deck = [];
-        let currentCard = null;
-    
-        const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
-        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-    
-        async function fetchUsers() {
-            try {
-                const response = await fetch('/static/users.json');
-                users = await response.json();
-                console.log('Fetched Users:', users);
-            } catch (error) {
-                console.error('Failed to fetch user data:', error);
-            }
+const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
+const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+async function fetchUsers() {
+    try {
+        const response = await fetch('/static/users.json');
+        users = await response.json();
+        console.log('Fetched Users:', users);
+    } catch (error) {
+        console.error('Failed to fetch user data:', error);
+    }
+}
+
+async function saveUsers() {
+    try {
+        const response = await fetch('/api/save_users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(users)
+        });
+        const result = await response.json();
+        console.log('Save Users Response:', result);
+    } catch (error) {
+        console.error('Failed to save user data:', error);
+    }
+}
+
+function createDeck() {
+    let deck = [];
+    for (let suit of suits) {
+        for (let value of values) {
+            deck.push({ suit, value });
         }
+    }
+    return deck;
+}
 
-        async function saveUsers() {
-            try {
-                const response = await fetch('/api/save_users', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(users)
-                });
-                const result = await response.json();
-                console.log('Save Users Response:', result);
-            } catch (error) {
-                console.error('Failed to save user data:', error);
-            }
-        }
+function shuffleDeck(deck) {
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+}
 
-        function createDeck() {
-            let deck = [];
-            for (let suit of suits) {
-                for (let value of values) {
-                    deck.push({ suit, value });
-                }
-            }
-            return deck;
-        }
+function drawCard() {
+    return deck.pop();
+}
 
-        function shuffleDeck(deck) {
-            for (let i = deck.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]];
-            }
-        }
+function compareCards(oldCard, newCard, choice) {
+    const oldValueIndex = values.indexOf(oldCard.value);
+    const newValueIndex = values.indexOf(newCard.value);
+    if (oldValueIndex === newValueIndex) {
+        return 'draw'; 
+    }
+    if (choice === 'higher') {
+        return newValueIndex > oldValueIndex ? 'win' : 'lose';
+    } else {
+        return newValueIndex < oldValueIndex ? 'win' : 'lose';
+    }
+}
 
-        function drawCard() {
-            return deck.pop();
-        }
+function guess(choice) {
+    const betAmount = parseInt(document.getElementById('betAmount').value);
+    if (isNaN(betAmount) || betAmount <= 0) {
+        alert('Please enter a valid bet amount.');
+        return;
+    }
+    if (betAmount > user.money) {
+        alert('You do not have enough money to place this bet.');
+        return;
+    }
 
-        function compareCards(oldCard, newCard, choice) {
-            const oldValueIndex = values.indexOf(oldCard.value);
-            const newValueIndex = values.indexOf(newCard.value);
-            if (choice === 'higher') {
-                return newValueIndex > oldValueIndex;
-            } else {
-                return newValueIndex < oldValueIndex;
-            }
-        }
+    previousCard = currentCard;
+    const newCard = drawCard();
+    const result = compareCards(previousCard, newCard, choice);
+    currentCard = newCard;
+    updateUI();
+    if (result === 'win') {
+        document.getElementById('result').innerText = 'Correct!';
+        user.money += betAmount;
+    } else if (result === 'lose') {
+        document.getElementById('result').innerText = 'Wrong!';
+        user.money -= betAmount;
+    } else {
+        document.getElementById('result').innerText = 'Draw! No change in balance.';
+    }
+    saveUsers();
+}
 
-        function guess(choice) {
-            // Your existing guess logic
-        }
+function updateUI() {
+    document.getElementById('dealerCard').innerText = `${previousCard.value} of ${previousCard.suit}`;
+    document.getElementById('playerCard').innerText = `${currentCard.value} of ${currentCard.suit}`;
+    document.getElementById('balance').innerText = `Balance: $${user.money}`;
+}
 
-        function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            user = users.find(u => u.username === username && u.password === password);
-            if (user) {
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('game').style.display = 'block';
-                deck = createDeck();
-                shuffleDeck(deck);
-                currentCard = drawCard();
-                updateUI();
-            } else {
-                alert('Invalid username or password');
-            }
-        }
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    user = users.find(u => u.username === username && u.password === password);
+    if (user) {
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('game').style.display = 'block';
+        deck = createDeck();
+        shuffleDeck(deck);
+        currentCard = drawCard();
+        previousCard = currentCard; // Initialize previousCard
+        updateUI();
+    } else {
+        alert('Invalid username or password');
+    }
+}
 
-        function updateUI() {
-            document.getElementById('currentCard').innerText = `${currentCard.value} of ${currentCard.suit}`;
-            document.getElementById('balance').innerText = `Balance: $${user.money}`;
-        }
-
-        fetchUsers();
-
-        function guess(choice) {
-            const newCard = drawCard();
-            const result = compareCards(currentCard, newCard, choice);
-            currentCard = newCard;
-            updateUI();
-            document.getElementById('result').innerText = result ? 'Correct!' : 'Wrong!';
-            if (result) {
-                user.money += 10;
-            } else {
-                user.money -= 10;
-            }
-            saveUsers();
-        }
-
-        fetchUsers();
+fetchUsers();
