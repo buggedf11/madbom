@@ -1,0 +1,62 @@
+/* Container for the deck of cards */
+.deck {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px;
+}
+
+/* Individual card styling */
+.card {
+    width: 100px;
+    height: 150px;
+    border: 1px solid #000;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    margin: 10px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+}
+
+/* Card suit styling */
+.card .suit {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 18px;
+}
+
+/* Card number styling */
+.card .number {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 18px;
+}
+
+/* Example suits */
+.card.hearts .suit,
+.card.hearts .number {
+    color: red;
+}
+
+.card.diamonds .suit,
+.card.diamonds .number {
+    color: red;
+}
+
+.card.clubs .suit,
+.card.clubs .number {
+    color: black;
+}
+
+.card.spades .suit,
+.card.spades .number {
+    color: black;
+}

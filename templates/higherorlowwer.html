@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Higher or Lower</title>
+    <link rel="stylesheet" href="/static/gambl.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,6 +50,21 @@
             }
         }
 
+        async function saveUsers() {
+            try {
+                await fetch('/static/users.json', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(users)
+                });
+                console.log('Users saved:', users);
+            } catch (error) {
+                console.error('Failed to save user data:', error);
+            }
+        }
+
         function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
@@ -64,11 +80,20 @@
         }
 
         function startGame() {
+            initializeDeck();
+            updateUI();
+        }
+
+        function initializeDeck() {
             deck = createDeck();
             shuffleDeck(deck);
             currentCard = drawCard();
-            document.getElementById('currentCard').innerText = currentCard.value + ' of ' + currentCard.suit;
-            document.getElementById('balance').innerText = 'Balance: $' + user.balance;
+        }
+
+        function updateUI() {
+            const cardElement = document.getElementById('currentCard');
+            cardElement.className = `card ${currentCard.suit.toLowerCase()}-${currentCard.value.toLowerCase()}`;
+            document.getElementById('balance').innerText = 'Balance: ' + user.money;
         }
 
         function createDeck() {
@@ -92,14 +117,6 @@
             return deck.pop();
         }
 
-        function guess(choice) {
-            const newCard = drawCard();
-            document.getElementById('currentCard').innerText = newCard.value + ' of ' + newCard.suit;
-            const result = compareCards(currentCard, newCard, choice);
-            document.getElementById('result').innerText = result ? 'You guessed right!' : 'You guessed wrong!';
-            currentCard = newCard;
-        }
-
         function compareCards(oldCard, newCard, choice) {
             const oldValueIndex = values.indexOf(oldCard.value);
             const newValueIndex = values.indexOf(newCard.value);
@@ -108,6 +125,20 @@
             } else {
                 return newValueIndex < oldValueIndex;
             }
+        }
+
+        function guess(choice) {
+            const newCard = drawCard();
+            const result = compareCards(currentCard, newCard, choice);
+            currentCard = newCard;
+            updateUI();
+            document.getElementById('result').innerText = result ? 'Correct!' : 'Wrong!';
+            if (result) {
+                user.money += 10;
+            } else {
+                user.money -= 10;
+            }
+            saveUsers();
         }
 
         fetchUsers();

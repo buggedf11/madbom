@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, send_from_directory, request
 import os
+import json
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'static/downloads'
@@ -52,6 +53,13 @@ def higherorlowwer():
 @app.route('/static/users.json')
 def get_users():
     return send_from_directory('static', 'users.json')
+
+@app.route('/api/save_users', methods=['POST'])
+def save_users():
+    users = request.json
+    with open('static/users.json', 'w') as f:
+        json.dump(users, f)
+    return jsonify({'success': 'Users saved successfully'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port = 3000)
