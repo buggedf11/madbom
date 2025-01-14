@@ -1,8 +1,10 @@
 # Introduction
-For stann
+For Stan
 
+# Read This
+Do not change any of the file just follow the instructions
 
-## Prerequisites
+## Instructions
 1. open the codespace litterate potatoe
 
 2. go to the fla.py file and in the top right it will have a play press this
