@@ -45,5 +45,9 @@ def upload_file():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
         return jsonify({'success': 'File uploaded successfully'}), 200
 
+@app.route('/higherorlowwer.html')
+def higherorlowwer():
+    return render_template('higherorlowwer.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

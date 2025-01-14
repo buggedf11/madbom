@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Higher or Lower</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .card {
+            font-size: 2em;
+            margin: 20px;
+        }
+        .buttons {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Higher or Lower</h1>
+    <div class="card" id="currentCard">?</div>
+    <div class="buttons">
+        <button onclick="guess('higher')">Higher</button>
+        <button onclick="guess('lower')">Lower</button>
+    </div>
+    <div id="result"></div>
+
+    <script>
+        const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
+        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+        let deck = [];
+        let currentCard = null;
+
+        function createDeck() {
+            deck = [];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({ suit, value });
+                }
+            }
+            deck = shuffle(deck);
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function drawCard() {
+            return deck.pop();
+        }
+
+        function cardValue(card) {
+            if (card.value === 'J') return 11;
+            if (card.value === 'Q') return 12;
+            if (card.value === 'K') return 13;
+            if (card.value === 'A') return 14;
+            return parseInt(card.value);
+        }
+
+        function startGame() {
+            createDeck();
+            currentCard = drawCard();
+            document.getElementById('currentCard').innerText = `${currentCard.value} of ${currentCard.suit}`;
+            document.getElementById('result').innerText = '';
+        }
+
+        function guess(higherOrLower) {
+            const nextCard = drawCard();
+            const currentCardValue = cardValue(currentCard);
+            const nextCardValue = cardValue(nextCard);
+
+            let result = '';
+            if ((higherOrLower === 'higher' && nextCardValue > currentCardValue) ||
+                (higherOrLower === 'lower' && nextCardValue < currentCardValue)) {
+                result = 'Correct!';
+            } else {
+                result = 'Wrong!';
+            }
+
+            currentCard = nextCard;
+            document.getElementById('currentCard').innerText = `${currentCard.value} of ${currentCard.suit}`;
+            document.getElementById('result').innerText = result;
+        }
+
+        startGame();
+    </script>
+</body>
+</html>
