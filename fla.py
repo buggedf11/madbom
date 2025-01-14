@@ -49,5 +49,9 @@ def upload_file():
 def higherorlowwer():
     return render_template('higherorlowwer.html')
 
+@app.route('/static/users.json')
+def get_users():
+    return send_from_directory('static', 'users.json')
+
 if __name__ == '__main__':
     app.run(debug=True)

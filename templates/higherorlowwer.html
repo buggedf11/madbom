@@ -7,14 +7,6 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        .card {
-            font-size: 2em;
-            margin: 20px;
-        }
-        .buttons {
             margin: 20px;
         }
     </style>
@@ -49,93 +41,76 @@
     
         async function fetchUsers() {
             try {
-                const response = await fetch('users.json');
+                const response = await fetch('/static/users.json');
                 users = await response.json();
+                console.log('Fetched Users:', users);
             } catch (error) {
                 console.error('Failed to fetch user data:', error);
             }
         }
-    
-        function updateBalance() {
-            document.getElementById('balance').innerText = `Balance: $${user.balance}`;
-        }
-    
-        function createDeck() {
-            deck = [];
-            for (let suit of suits) {
-                for (let value of values) {
-                    deck.push({ suit, value });
-                }
-            }
-            deck = shuffle(deck);
-        }
-    
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-    
-        function drawCard() {
-            return deck.pop();
-        }
-    
-        function cardValue(card) {
-            if (card.value === 'J') return 11;
-            if (card.value === 'Q') return 12;
-            if (card.value === 'K') return 13;
-            if (card.value === 'A') return 14;
-            return parseInt(card.value);
-        }
-    
-        function startGame() {
-            createDeck();
-            currentCard = drawCard();
-            document.getElementById('currentCard').innerText = `${currentCard.value} of ${currentCard.suit}`;
-            document.getElementById('result').innerText = '';
-        }
-    
-        function guess(higherOrLower) {
-            const nextCard = drawCard();
-            const currentCardValue = cardValue(currentCard);
-            const nextCardValue = cardValue(nextCard);
-    
-            let result = '';
-            if ((higherOrLower === 'higher' && nextCardValue > currentCardValue) ||
-                (higherOrLower === 'lower' && nextCardValue < currentCardValue)) {
-                result = 'Correct!';
-                user.balance += 10; // Add money for correct guess
-            } else {
-                result = 'Wrong!';
-                user.balance -= 10; // Deduct money for wrong guess
-            }
-    
-            currentCard = nextCard;
-            document.getElementById('currentCard').innerText = `${currentCard.value} of ${currentCard.suit}`;
-            document.getElementById('result').innerText = result;
-            updateBalance();
-        }
-    
-        async function login() {
+
+        function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-    
-            user = users.find(u => u.username === username && u.password === password);
-    
-            if (user) {
+            const userFound = users.find(u => u.username === username && u.password === password);
+            if (userFound) {
+                user = userFound;
                 document.getElementById('login').style.display = 'none';
                 document.getElementById('game').style.display = 'block';
-                updateBalance();
                 startGame();
             } else {
                 alert('Invalid username or password');
             }
         }
-    
-        // Fetch users on page load
-        window.onload = fetchUsers;
-    </script>    
+
+        function startGame() {
+            deck = createDeck();
+            shuffleDeck(deck);
+            currentCard = drawCard();
+            document.getElementById('currentCard').innerText = currentCard.value + ' of ' + currentCard.suit;
+            document.getElementById('balance').innerText = 'Balance: $100';
+        }
+
+        function createDeck() {
+            let deck = [];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({ suit, value });
+                }
+            }
+            return deck;
+        }
+
+        function shuffleDeck(deck) {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function drawCard() {
+            return deck.pop();
+        }
+
+        function guess(choice) {
+            const newCard = drawCard();
+            document.getElementById('currentCard').innerText = newCard.value + ' of ' + newCard.suit;
+            const result = compareCards(currentCard, newCard, choice);
+            document.getElementById('result').innerText = result ? 'You guessed right!' : 'You guessed wrong!';
+            currentCard = newCard;
+        }
+
+        function compareCards(oldCard, newCard, choice) {
+            const oldValueIndex = values.indexOf(oldCard.value);
+            const newValueIndex = values.indexOf(newCard.value);
+            if (choice === 'higher') {
+                return newValueIndex > oldValueIndex;
+            } else {
+                return newValueIndex < oldValueIndex;
+            }
+        }
+
+        fetchUsers();
+    </script>
 </body>
 </html>
