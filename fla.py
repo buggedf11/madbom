@@ -22,33 +22,13 @@ def calendar():
 def sound():
     return render_template('sound.html')
 
-@app.route('/downloads.html')
-def downloads():
-    return render_template('downloads.html')
-
 @app.route('/bank.html')
 def bank():
     return render_template('bank.html')
 
-@app.route('/api/files')
-def list_files():
-    files = os.listdir(app.config['UPLOAD_FOLDER'])
-    return jsonify(files)
-
-@app.route('/downloads/<filename>')
-def download_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-@app.route('/api/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
-    if file:
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
-        return jsonify({'success': 'File uploaded successfully'}), 200
+@app.route('/blackj.html')
+def blackjack():
+    return render_template('blackj.html')
 
 @app.route('/higherorlowwer.html')
 def higherorlowwer():
@@ -65,5 +45,35 @@ def save_users():
         json.dump(users, f)
     return jsonify({'success': 'Users saved successfully'}), 200
 
+@app.route('/updateUser', methods=['POST'])
+def update_user():
+    data = request.get_json()
+    username = data.get('username')
+    money = data.get('money')
+
+    try:
+        with open('static/users.json', 'r') as file:
+            users = json.load(file)
+    except FileNotFoundError:
+        return jsonify({'error': 'User data file not found'}), 500
+
+    user_found = False
+    for user in users:
+        if user['username'] == username:
+            user['money'] = money
+            user_found = True
+            break
+
+    if not user_found:
+        return jsonify({'error': 'User not found'}), 404
+
+    try:
+        with open('static/users.json', 'w') as file:
+            json.dump(users, file, indent=2)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify({'message': 'User data updated successfully'})
+
 if __name__ == '__main__':
-    app.run(debug=True, port = 5000)
+    app.run(host='127.0.0.1', port=3000, debug=False)

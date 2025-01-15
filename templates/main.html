@@ -5,19 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Page</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .bubble {
+            border: 2px solid #000;
+            border-radius: 15px;
+            padding: 10px;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
-    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;">
+    <div class="bubble">
         <button onclick="location.href='calendar.html'">Calendar</button>
         <button onclick="location.href='sound.html'">Sound</button>
-        <button onclick="location.href='downloads.html'">Downloads</button>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;">
         <button onclick="location.href='higherorlowwer.html'">higher or lowwer</button>
         <button onclick="location.href='bank.html'">BANK</button>
-        <button onclick="location.href='main.html'">Button 6</button>
+        <button onclick="location.href='blackj.html'">Black Jack Not Working Yet</button>
         <button onclick="location.href='main.html'">Button 7</button>
         <button onclick="location.href='main.html'">Button 8</button>
-        <button onclick="location.href='main.html'">Button 9</button>
-        <button onclick="location.href='main.html'">Button 10</button>
     </div>
 </body>
 </html>

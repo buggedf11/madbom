@@ -53,28 +53,26 @@
             font-size: 18px;
         }
         .home-button {
-        background-color: #3498db;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
         .home-button:hover {
             background-color: #2980b9;
         }
-</style>
     </style>
 </head>
 <body>
     <h1 style="text-align: center;">Higher or Lower</h1>
-    <h1 style="text-align: right;">A = 13</h1>
-    <h1 style="text-align: right;">K = 12</h1>
-    <h1 style="text-align: right;">Q = 11</h1>
-    <h1 style="text-align: right;">J = 10</h1>
+    <h1 style="text-align: right;">A = 14</h1>
+    <h1 style="text-align: right;">K = 13</h1>
+    <h1 style="text-align: right;">Q = 12</h1>
+    <h1 style="text-align: right;">J = 11</h1>
 
-    
     <div id="login">
         <label for="username">Username:</label>
         <input type="text" id="username">
@@ -93,16 +91,178 @@
                 <label for="playerCard">Current Card</label>
             </div>
         </div>
-        <div id="balance"></div>
+        <div id="winRate">Win Rate: 0.00%</div>
+        <div id="balance">Balance: $0</div>
         <label for="betAmount">Bet Amount:</label>
         <input type="number" id="betAmount" min="1">
         <h2 id="Min bet 1 Max bet 1000"></h2>
         <div class="buttons">
-            <button onclick="guess('higher')">Higher</button>
-            <button onclick="guess('lower')">Lower</button>
+            <button onclick="playGame('higher')">Higher</button>
+            <button onclick="playGame('lower')">Lower</button>
         </div>
         <div id="result"></div>
     </div>
-    <script src="/static/highorlow.js"></script>
+    <script>
+    let users = [];
+    let user = null;
+    let deck = [];
+    let currentCard = null;
+    let previousCard = null;
+    let gamesPlayed = 0;
+    let playerWins = 0;
+
+    function createDeck() {
+        const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        const deck = [];
+        for (const suit of suits) {
+            for (const value of values) {
+                deck.push({ suit, value });
+            }
+        }
+        return deck;
+    }
+
+    function shuffleDeck(deck) {
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+    }
+
+    function drawCard() {
+        if (deck.length === 0) {
+            deck = createDeck();
+            shuffleDeck(deck);
+        }
+        return deck.pop();
+    }
+
+    function compareCards(card1, card2, choice) {
+        const cardValues = {
+            '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
+            'J': 11, 'Q': 12, 'K': 13, 'A': 14
+        };
+        const value1 = cardValues[card1.value];
+        const value2 = cardValues[card2.value];
+        if (choice === 'higher') {
+            return value2 > value1 ? 'win' : 'lose';
+        } else if (choice === 'lower') {
+            return value2 < value1 ? 'win' : 'lose';
+        }
+        return 'draw';
+    }
+
+    function playGame(choice) {
+        const betAmount = parseInt(document.getElementById('betAmount').value);
+        if (isNaN(betAmount) || betAmount <= 0) {
+            alert('Please enter a valid bet amount.');
+            return;
+        }
+        if (betAmount > user.money) {
+            alert('You do not have enough money to place this bet.');
+            return;
+        }
+        if (betAmount > 1000) {
+            alert('You cannot bet more than $1000.');
+            return;
+        }
+
+        previousCard = currentCard;
+        currentCard = drawCard();
+        if (!previousCard || !currentCard) {
+            alert('Error drawing cards. Please try again.');
+            return;
+        }
+        const result = compareCards(previousCard, currentCard, choice);
+        gamesPlayed++;
+        if (result === 'win') {
+            document.getElementById('result').innerText = 'Correct!';
+            user.money += betAmount;
+            playerWins++;
+        } else if (result === 'lose') {
+            document.getElementById('result').innerText = 'Wrong!';
+            user.money -= betAmount;
+        } else {
+            document.getElementById('result').innerText = 'Draw! No change in balance.';
+        }
+        updateWinRate();
+        updateUI();
+        saveUsers(); // Save the updated balance after every game
+    }
+
+    function saveUsers() {
+        fetch('/updateUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: user.username, money: user.money })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+        })
+        .catch(error => {
+            console.error('Error updating user data:', error);
+        });
+    }
+
+    function updateWinRate() {
+        const winRate = (playerWins / gamesPlayed) * 100;
+        document.getElementById('winRate').innerText = `Win Rate: ${winRate.toFixed(2)}%`;
+    }
+
+    function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    fetch('/static/users.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch user data.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            users = data;
+            user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                // Ensure money is initialized and valid
+                user.money = typeof user.money === 'number' ? user.money : 0;
+
+                // Hide login UI and show game UI
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('game').style.display = 'block';
+
+                // Initialize deck and cards
+                deck = createDeck();
+                shuffleDeck(deck);
+                currentCard = drawCard();
+                previousCard = currentCard; // Start with the same card
+
+                // Update the UI with user information
+                updateUI();
+            } else {
+                alert('Invalid username or password.');
+            }
+        })
+        .catch(error => {
+            console.error('Error during login:', error);
+            alert('An error occurred while trying to log in.');
+        });
+}
+
+function updateUI() {
+    // Update card values
+    document.getElementById('dealerCard').innerText = previousCard ? previousCard.value : '?';
+    document.getElementById('playerCard').innerText = currentCard ? currentCard.value : '?';
+
+    // Update balance display
+    document.getElementById('balance').innerText = `Balance: $${user.money}`;
+}
+
+    </script>
 </body>
 </html>
