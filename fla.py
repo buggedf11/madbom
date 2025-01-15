@@ -26,6 +26,10 @@ def sound():
 def downloads():
     return render_template('downloads.html')
 
+@app.route('/bank.html')
+def bank():
+    return render_template('bank.html')
+
 @app.route('/api/files')
 def list_files():
     files = os.listdir(app.config['UPLOAD_FOLDER'])
@@ -62,4 +66,4 @@ def save_users():
     return jsonify({'success': 'Users saved successfully'}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True, port = 3000)
+    app.run(debug=True, port = 5000)

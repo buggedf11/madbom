@@ -118,4 +118,37 @@ function login() {
     }
 }
 
+function guess(choice) {
+    const betAmount = parseInt(document.getElementById('betAmount').value);
+    if (isNaN(betAmount) || betAmount <= 0) {
+        alert('Please enter a valid bet amount.');
+        return;
+    }
+    if (betAmount > user.money) {
+        alert('You do not have enough money to place this bet.');
+        return;
+    }
+    if (betAmount > 1000) {
+        alert('You cannot bet more than $1000.');
+        return;
+    }
+
+    previousCard = currentCard;
+    const newCard = drawCard();
+    const result = compareCards(previousCard, newCard, choice);
+    currentCard = newCard;
+    updateUI();
+    if (result === 'win') {
+        document.getElementById('result').innerText = 'Correct!';
+        user.money += betAmount;
+    } else if (result === 'lose') {
+        document.getElementById('result').innerText = 'Wrong!';
+        user.money -= betAmount;
+    } else {
+        document.getElementById('result').innerText = 'Draw! No change in balance.';
+    }
+    saveUsers();
+}
+
+
 fetchUsers();
