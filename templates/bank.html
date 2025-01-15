@@ -23,7 +23,7 @@
             text-align: center;
         }
         .balance {
-            font-size: 2em;
+            font-size: 1.5em;
             color: #333;
         }
         .hidden {
@@ -32,6 +32,7 @@
     </style>
 </head>
 <body>
+    <button class="home-button" onclick="location.href='main.html'">Home</button>
     <div class="container" id="login-container">
         <h1>Login</h1>
         <form id="login-form">
@@ -42,65 +43,125 @@
     </div>
     <div class="container hidden" id="balance-container">
         <h1>Welcome, <span id="user-name"></span></h1>
-        <p>Your current balance is:</p>
-        <p class="balance" id="balance-value">$1,000.00</p>
+        <p>Your current balances are:</p>
+        <p class="balance">Money: <span id="money-value"></span></p>
+        <p class="balance">Bank: <span id="bank-value"></span></p>
+
+        <div>
+            <h2>Transfer to Bank</h2>
+            <input type="number" id="deposit-amount" placeholder="Enter amount to deposit">
+            <button id="deposit-button">Deposit</button>
+        </div>
+
+        <div>
+            <h2>Withdraw from Bank</h2>
+            <input type="number" id="withdraw-amount" placeholder="Enter amount to withdraw">
+            <button id="withdraw-button">Withdraw</button>
+        </div>
     </div>
 
     <script>
-        document.getElementById('login-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+        let currentUser = null;
+        let users = [];
 
-                function login() {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        user = users.find(u => u.username === username && u.password === password);
-        if (user) {
-            document.getElementById('login').style.display = 'none';
-            document.getElementById('game').style.display = 'block';
-            deck = createDeck();
-            shuffleDeck(deck);
-            currentCard = drawCard();
-            previousCard = currentCard; // Initialize previousCard
-            updateUI();
-        } else {
-            alert('Invalid username or password');
+        async function fetchUsers() {
+            try {
+                const response = await fetch('/static/users.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load user data');
+                }
+                users = await response.json();
+                return users;
+            } catch (error) {
+                alert('Error: Unable to fetch user data. Please try again later.');
+                throw error;
+            }
         }
-    }
 
-            if (username === 'admin' && password === 'password') {
-                document.getElementById('login-container').classList.add('hidden');
-                document.getElementById('balance-container').classList.remove('hidden');
-                document.getElementById('user-name').innerText = username;
-            } else {
-                alert('Invalid username or password');
+        async function saveUsers() {
+            try {
+                const response = await fetch('/api/save_users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(users)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save user data');
+                }
+
+                const result = await response.json();
+                console.log(result.success);
+            } catch (error) {
+                console.error('Error saving user data:', error);
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            try {
+                const allUsers = await fetchUsers();
+                currentUser = allUsers.find(u => u.username === username && u.password === password);
+
+                if (currentUser) {
+                    // Show the balance container and hide the login container
+                    document.getElementById('login-container').classList.add('hidden');
+                    document.getElementById('balance-container').classList.remove('hidden');
+
+                    // Update the balance and user name display
+                    document.getElementById('user-name').innerText = username;
+                    updateBalances();
+                } else {
+                    alert('Invalid username or password');
+                }
+            } catch (error) {
+                console.error('Error during login:', error);
             }
         });
+
+        document.getElementById('deposit-button').addEventListener('click', function() {
+            const depositAmount = parseFloat(document.getElementById('deposit-amount').value);
+
+            if (currentUser && depositAmount > 0 && depositAmount <= currentUser.money) {
+                currentUser.money -= depositAmount;
+                currentUser.bank += depositAmount;
+
+                updateBalances();
+                saveUsers();
+                alert(`Successfully deposited $${depositAmount} to the bank.`);
+            } else if (depositAmount > currentUser.money) {
+                alert("You don't have enough money to deposit that amount.");
+            } else {
+                alert("Please enter a valid deposit amount.");
+            }
+        });
+
+        document.getElementById('withdraw-button').addEventListener('click', function() {
+            const withdrawAmount = parseFloat(document.getElementById('withdraw-amount').value);
+
+            if (currentUser && withdrawAmount > 0 && withdrawAmount <= currentUser.bank) {
+                currentUser.bank -= withdrawAmount;
+                currentUser.money += withdrawAmount;
+
+                updateBalances();
+                saveUsers();
+                alert(`Successfully withdrew $${withdrawAmount} from the bank.`);
+            } else if (withdrawAmount > currentUser.bank) {
+                alert("You don't have enough money in the bank to withdraw that amount.");
+            } else {
+                alert("Please enter a valid withdraw amount.");
+            }
+        });
+
+        function updateBalances() {
+            document.getElementById('money-value').innerText = `$${currentUser.money}`;
+            document.getElementById('bank-value').innerText = `$${currentUser.bank}`;
+        }
     </script>
 </body>
 </html>
-<script>
-    async function fetchUsers() {
-        const response = await fetch('/path/to/users.json');
-        const users = await response.json();
-        return users;
-    }
-
-    document.getElementById('login-form').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-
-        const users = await fetchUsers();
-        const user = users.find(u => u.username === username && u.password === password);
-
-        if (user) {
-            document.getElementById('login-container').classList.add('hidden');
-            document.getElementById('balance-container').classList.remove('hidden');
-            document.getElementById('user-name').innerText = username;
-        } else {
-            alert('Invalid username or password');
-        }
-    });
-</script>
