@@ -1,5 +1,6 @@
 let user = null; // Define the user variable at the top
 let bankValue = 0; // Initialize bankValue
+let wheel;
 
 document.getElementById('loginForm').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -25,6 +26,7 @@ function fetchUserData(username, password) {
             document.getElementById('login').style.display = 'none';
             document.getElementById('game').style.display = 'block';
             document.getElementById('balance').textContent = bankValue;
+            startGame(); // Start the game after successful login
         } else {
             alert('Invalid username or password.');
         }
@@ -37,7 +39,7 @@ function fetchUserData(username, password) {
 fetchUserData();
 
 function resetGame(){
-    bankValue = 1000;
+    bankValue = user ? user.money : 1000; // Reset bankValue to user's money or default to 1000
     currentBet = 0;
     wager = 5;
     bet = [];
@@ -48,7 +50,8 @@ function resetGame(){
     buildBettingBoard();
 }
 
-function startGame(){
+function startGame() {
+    wheel = document.getElementsByClassName('wheel')[0]; // Initialize the wheel variable
     buildWheel();
     buildBettingBoard();
 }
@@ -63,7 +66,7 @@ function gameOver(){
 
     let nBtn = document.createElement('div');
     nBtn.setAttribute('class', 'nBtn');
-    nBtn.innerText = 'Play again';    
+    nBtn.innerText = 'Play again';
     nBtn.onclick = function(){
         resetGame();
     };
@@ -71,7 +74,7 @@ function gameOver(){
     container.prepend(notification);
 }
 
-// ... rest of your code remains unchanged ...
+
 let currentBet = 0;
 let wager = 5;
 let lastWager = 0;
@@ -86,30 +89,31 @@ let container = document.createElement('div');
 container.setAttribute('id', 'container');
 document.body.append(container);
 
-let wheel = document.getElementsByClassName('wheel')[0];
-startGame();
+
+
 
 function gameOver(){
     let notification = document.createElement('div');
     notification.setAttribute('id', 'notification');
     let nSpan = document.createElement('span');
-		nSpan.setAttribute('class', 'nSpan');
-		nSpan.innerText = 'Bankrupt';
-		notification.append(nSpan);
+    nSpan.setAttribute('class', 'nSpan');
+    nSpan.innerText = 'Bankrupt';
+    notification.append(nSpan);
 
-		let nBtn = document.createElement('div');
-		nBtn.setAttribute('class', 'nBtn');
-		nBtn.innerText = 'Play again';	
-		nBtn.onclick = function(){
-			resetGame();
-		};
-		notification.append(nBtn);
-	container.prepend(notification);
+    let nBtn = document.createElement('div');
+    nBtn.setAttribute('class', 'nBtn');
+    nBtn.innerText = 'Play again';
+    nBtn.onclick = function(){
+        resetGame();
+    };
+    notification.append(nBtn);
+    container.prepend(notification);
 }
 
 function buildWheel(){
-	let wheel = document.createElement('div');
-	wheel.setAttribute('class', 'wheel');
+    wheel = document.createElement('div'); // Initialize the wheel variable
+    wheel.setAttribute('class', 'wheel');
+    document.body.append(wheel);
 
 	let outerRim = document.createElement('div');
 	outerRim.setAttribute('class', 'outerRim');
@@ -486,6 +490,11 @@ function buildBettingBoard(){
 	bettingBoard.append(pnBlock);
 	
 	container.append(bettingBoard);
+}
+
+function startGame() {
+    buildWheel();
+    buildBettingBoard();
 }
 
 function clearBet(){
