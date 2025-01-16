@@ -7,7 +7,7 @@
             "maxBet": 25000
         },
         "HandL": {
-            "maxBet": 10000
+            "maxBet": 1000
         }
     }
 }
