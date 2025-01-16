@@ -1,0 +1,38 @@
+[
+  {
+    "username": "Stan",
+    "password": "stan",
+    "bank": 149000,
+    "money": 1000
+  },
+  {
+    "username": "Alex",
+    "password": "alex",
+    "bank": 23902,
+    "money": 655200
+  },
+  {
+    "username": "Ron",
+    "password": "ron",
+    "bank": 0,
+    "money": 100
+  },
+  {
+    "username": "Karol",
+    "password": "karol",
+    "bank": 0,
+    "money": 100
+  },
+  {
+    "username": "May",
+    "password": "may",
+    "bank": 0,
+    "money": 100
+  },
+  {
+    "username": "Mic",
+    "password": "mic",
+    "bank": 0,
+    "money": 100
+  }
+]
