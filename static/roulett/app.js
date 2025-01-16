@@ -1,26 +1,38 @@
-function fetchUserData() {
+let user = null; // Define the user variable at the top
+let bankValue = 0; // Initialize bankValue
+
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    fetchUserData(username, password);
+});
+
+function fetchUserData(username, password) {
     fetch('/static/users.json')
     .then(response => {
         if (!response.ok) {
             throw new Error('Failed to fetch user data.');
         }
-		return response.json();
-	})
-	.then(data => {
-        users = data;
+        return response.json();
+    })
+    .then(data => {
+        const users = data;
         user = users.find(u => u.username === username && u.password === password);
 
         if (user) {
-            user.money = typeof user.money === 'number' ? user.money : 0;
+            bankValue = typeof user.money === 'number' ? user.money : 0;
             document.getElementById('login').style.display = 'none';
             document.getElementById('game').style.display = 'block';
-            updateUI();
+            document.getElementById('balance').textContent = bankValue;
         } else {
             alert('Invalid username or password.');
         }
-		});
-	}
-
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 
 fetchUserData();
 
@@ -60,7 +72,6 @@ function gameOver(){
 }
 
 // ... rest of your code remains unchanged ...
-let bankValue = 1000;
 let currentBet = 0;
 let wager = 5;
 let lastWager = 0;
@@ -77,10 +88,11 @@ document.body.append(container);
 
 let wheel = document.getElementsByClassName('wheel')[0];
 startGame();
+
 function gameOver(){
-	let notification = document.createElement('div');
-	notification.setAttribute('id', 'notification');
-		let nSpan = document.createElement('span');
+    let notification = document.createElement('div');
+    notification.setAttribute('id', 'notification');
+    let nSpan = document.createElement('span');
 		nSpan.setAttribute('class', 'nSpan');
 		nSpan.innerText = 'Bankrupt';
 		notification.append(nSpan);
