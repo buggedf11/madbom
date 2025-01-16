@@ -38,6 +38,10 @@ def higherorlowwer():
 def get_users():
     return send_from_directory('static', 'users.json')
 
+@app.route('/roule.html')
+def roule():
+    return render_template("roule.html")
+
 @app.route('/api/save_users', methods=['POST'])
 def save_users():
     users = request.json
