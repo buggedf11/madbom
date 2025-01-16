@@ -3,13 +3,13 @@
     "username": "Stan",
     "password": "stan",
     "bank": 149000,
-    "money": 1000
+    "money": 239000
   },
   {
     "username": "Alex",
     "password": "alex",
     "bank": 23902,
-    "money": 655200
+    "money": 652600
   },
   {
     "username": "Ron",
@@ -24,8 +24,8 @@
     "money": 100
   },
   {
-    "username": "May",
-    "password": "may",
+    "username": "Chris",
+    "password": "chris",
     "bank": 0,
     "money": 100
   },

@@ -16,13 +16,14 @@
         }
         button {
             padding: 10px 20px;
-            margin: 10px;
             font-size: 16px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <h1>Blackjack Game</h1>
+    <button class="home-button" onclick="location.href='main.html'">Home</button>
     <div id="login">
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
@@ -31,8 +32,7 @@
     <div id="game" style="display: none;">
         <div id="balance"></div>
         <div id="bet">
-            <input type="number" id="bet-amount" placeholder="Bet Amount">
-            <button onclick="placeBet()">Place Bet</button>
+            <input type="number" id="bet-amount" placeholder="Bet Amount" oninput="placeBet()">
         </div>
         <div id="player-hand"></div>
         <div id="dealer-hand"></div>
@@ -47,6 +47,7 @@
         let user = null;
         let deck, playerHand, dealerHand;
         let betAmount = 0;
+        const MAX_BET = 25000;
 
         function createDeck() {
             const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
@@ -170,8 +171,8 @@
 
         function placeBet() {
             betAmount = parseFloat(document.getElementById('bet-amount').value);
-            if (isNaN(betAmount) || betAmount <= 0) {
-                alert('Please enter a valid bet amount.');
+            if (isNaN(betAmount) || betAmount <= 0 || betAmount > MAX_BET) {
+                alert(`Please enter a valid bet amount up to $${MAX_BET}.`);
                 return;
             }
         }
