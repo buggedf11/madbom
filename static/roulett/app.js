@@ -559,86 +559,94 @@ function setBet(e, n, t, o){
 	}
 }
 
-function spin(){
-	var winningSpin = Math.floor(Math.random() * 37);
-	spinWheel(winningSpin);
-	setTimeout(function(){
-		if(numbersBet.includes(winningSpin)){
-			let winValue = 0;
-			let betTotal = 0;
-			for(i = 0; i < bet.length; i++){
-				var numArray = bet[i].numbers.split(',').map(Number);
-				if(numArray.includes(winningSpin)){
-					bankValue = (bankValue + (bet[i].odds * bet[i].amt) + bet[i].amt);
-					winValue = winValue + (bet[i].odds * bet[i].amt);
-					betTotal = betTotal + bet[i].amt;
-				}
-			}
-			win(winningSpin, winValue, betTotal);
-		}
+function spin() {
+    // Deduct the current bet from the user's money
+    user.money = bankValue;
+    saveUsers();
 
-		currentBet = 0;
-		document.getElementById('bankSpan').innerText = '' + bankValue.toLocaleString("en-GB") + '';
-		document.getElementById('betSpan').innerText = '' + currentBet.toLocaleString("en-GB") + '';
-		
-		let pnClass = (numRed.includes(winningSpin))? 'pnRed' : ((winningSpin == 0)? 'pnGreen' : 'pnBlack');
-		let pnContent = document.getElementById('pnContent');
-		let pnSpan = document.createElement('span');
-		pnSpan.setAttribute('class', pnClass);
-		pnSpan.innerText = winningSpin;
-		pnContent.append(pnSpan);
-		pnContent.scrollLeft = pnContent.scrollWidth;
+    var winningSpin = Math.floor(Math.random() * 37);
+    spinWheel(winningSpin);
+    setTimeout(function() {
+        if (numbersBet.includes(winningSpin)) {
+            let winValue = 0;
+            let betTotal = 0;
+            for (i = 0; i < bet.length; i++) {
+                var numArray = bet[i].numbers.split(',').map(Number);
+                if (numArray.includes(winningSpin)) {
+                    bankValue = (bankValue + (bet[i].odds * bet[i].amt) + bet[i].amt);
+                    winValue = winValue + (bet[i].odds * bet[i].amt);
+                    betTotal = betTotal + bet[i].amt;
+                }
+            }
+            win(winningSpin, winValue, betTotal);
+        }
 
-		bet = [];
-		numbersBet = [];
-		removeChips();
-		wager = lastWager;
-		if(bankValue == 0 && currentBet == 0){
-			gameOver();
-		}
-	}, 10000);
+        currentBet = 0;
+        document.getElementById('bankSpan').innerText = '' + bankValue.toLocaleString("en-GB") + '';
+        document.getElementById('betSpan').innerText = '' + currentBet.toLocaleString("en-GB") + '';
+
+        let pnClass = (numRed.includes(winningSpin)) ? 'pnRed' : ((winningSpin == 0) ? 'pnGreen' : 'pnBlack');
+        let pnContent = document.getElementById('pnContent');
+        let pnSpan = document.createElement('span');
+        pnSpan.setAttribute('class', pnClass);
+        pnSpan.innerText = winningSpin;
+        pnContent.append(pnSpan);
+        pnContent.scrollLeft = pnContent.scrollWidth;
+
+        bet = [];
+        numbersBet = [];
+        removeChips();
+        wager = lastWager;
+        if (bankValue == 0 && currentBet == 0) {
+            gameOver();
+        }
+    }, 10000);
 }
 
 function win(winningSpin, winValue, betTotal){
-	if(winValue > 0){
-		let notification = document.createElement('div');
-		notification.setAttribute('id', 'notification');
-			let nSpan = document.createElement('div');
-			nSpan.setAttribute('class', 'nSpan');
-				let nsnumber = document.createElement('span');
-				nsnumber.setAttribute('class', 'nsnumber');
-				nsnumber.style.cssText = (numRed.includes(winningSpin))? 'color:red' : 'color:black';
-				nsnumber.innerText = winningSpin;
-				nSpan.append(nsnumber);
-				let nsTxt = document.createElement('span');
-				nsTxt.innerText = ' Win';
-				nSpan.append(nsTxt);
-				let nsWin = document.createElement('div');
-				nsWin.setAttribute('class', 'nsWin');
-					let nsWinBlock = document.createElement('div');
-					nsWinBlock.setAttribute('class', 'nsWinBlock');
-					nsWinBlock.innerText = 'Bet: ' + betTotal;
-					nSpan.append(nsWinBlock);
-					nsWin.append(nsWinBlock);
-					nsWinBlock = document.createElement('div');
-					nsWinBlock.setAttribute('class', 'nsWinBlock');
-					nsWinBlock.innerText = 'Win: ' + winValue;
-					nSpan.append(nsWinBlock);
-					nsWin.append(nsWinBlock);
-					nsWinBlock = document.createElement('div');
-					nsWinBlock.setAttribute('class', 'nsWinBlock');
-					nsWinBlock.innerText = 'Payout: ' + (winValue + betTotal);
-					nsWin.append(nsWinBlock);
-				nSpan.append(nsWin);
-			notification.append(nSpan);
-		container.prepend(notification);
-		setTimeout(function(){
-			notification.style.cssText = 'opacity:0';
-		}, 3000);
-		setTimeout(function(){
-			notification.remove();
-		}, 4000);
-	}
+    if(winValue > 0){
+        let notification = document.createElement('div');
+        notification.setAttribute('id', 'notification');
+            let nSpan = document.createElement('div');
+            nSpan.setAttribute('class', 'nSpan');
+                let nsnumber = document.createElement('span');
+                nsnumber.setAttribute('class', 'nsnumber');
+                nsnumber.style.cssText = (numRed.includes(winningSpin))? 'color:red' : 'color:black';
+                nsnumber.innerText = winningSpin;
+                nSpan.append(nsnumber);
+                let nsTxt = document.createElement('span');
+                nsTxt.innerText = ' Win';
+                nSpan.append(nsTxt);
+                let nsWin = document.createElement('div');
+                nsWin.setAttribute('class', 'nsWin');
+                    let nsWinBlock = document.createElement('div');
+                    nsWinBlock.setAttribute('class', 'nsWinBlock');
+                    nsWinBlock.innerText = 'Bet: ' + betTotal;
+                    nSpan.append(nsWinBlock);
+                    nsWin.append(nsWinBlock);
+                    nsWinBlock = document.createElement('div');
+                    nsWinBlock.setAttribute('class', 'nsWinBlock');
+                    nsWinBlock.innerText = 'Win: ' + winValue;
+                    nSpan.append(nsWinBlock);
+                    nsWin.append(nsWinBlock);
+                    nsWinBlock = document.createElement('div');
+                    nsWinBlock.setAttribute('class', 'nsWinBlock');
+                    nsWinBlock.innerText = 'Payout: ' + (winValue + betTotal);
+                    nsWin.append(nsWinBlock);
+                nSpan.append(nsWin);
+            notification.append(nSpan);
+        container.prepend(notification);
+        setTimeout(function(){
+            notification.style.cssText = 'opacity:0';
+        }, 3000);
+        setTimeout(function(){
+            notification.remove();
+        }, 4000);
+
+        // Update user's money and save it
+        user.money = bankValue;
+        saveUsers();
+    }
 }
 
 function removeBet(e, n, t, o){
@@ -670,6 +678,7 @@ function removeBet(e, n, t, o){
 }
 
 function spinWheel(winningSpin){
+	let ballTrack = document.querySelector('.ballTrack'); // Define ballTrack variable
 	for(i = 0; i < wheelnumbersAC.length; i++){
 		if(wheelnumbersAC[i] == winningSpin){
 			var degree = (i * 9.73) + 362;
@@ -705,4 +714,21 @@ function removeChips(){
 		}
 		removeChips();
 	}
+}
+
+function saveUsers() {
+    fetch('/updateUser', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: user.username, money: user.money })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.message);
+    })
+    .catch(error => {
+        console.error('Error updating user data:', error);
+    });
 }

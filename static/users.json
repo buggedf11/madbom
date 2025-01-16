@@ -1,1 +1,38 @@
-[{"username": "Stan", "password": "sjd", "bank": 1087000, "money": 15724}, {"username": "Alex", "password": "GEMnec2152", "bank": 24953, "money": 24698}, {"username": "Fatty", "password": "0808", "bank": 39000, "money": 0}, {"username": "Karol", "password": "karol", "bank": 1000, "money": 14510}, {"username": "Chris", "password": "chris", "bank": 0, "money": 100}, {"username": "Mic", "password": "admin", "bank": 15789001, "money": 10000}]
+[
+  {
+    "username": "Stan",
+    "password": "sjd",
+    "bank": 1087000,
+    "money": 15724
+  },
+  {
+    "username": "Alex",
+    "password": "GEMnec2152",
+    "bank": 24953,
+    "money": 25098
+  },
+  {
+    "username": "Fatty",
+    "password": "0808",
+    "bank": 39000,
+    "money": 0
+  },
+  {
+    "username": "Karol",
+    "password": "karol",
+    "bank": 1000,
+    "money": 14510
+  },
+  {
+    "username": "Chris",
+    "password": "chris",
+    "bank": 0,
+    "money": 100
+  },
+  {
+    "username": "Mic",
+    "password": "admin",
+    "bank": 15789001,
+    "money": 10000
+  }
+]
