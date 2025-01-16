@@ -58,6 +58,13 @@
             <input type="number" id="withdraw-amount" placeholder="Enter amount to withdraw">
             <button id="withdraw-button">Withdraw</button>
         </div>
+
+        <div>
+            <h2>Send Money to Another User</h2>
+            <input type="text" id="recipient-username" placeholder="Recipient Username">
+            <input type="number" id="transfer-amount" placeholder="Enter amount to transfer">
+            <button id="transfer-button">Send Money</button>
+        </div>
     </div>
 
     <script>
@@ -155,6 +162,30 @@
                 alert("You don't have enough money in the bank to withdraw that amount.");
             } else {
                 alert("Please enter a valid withdraw amount.");
+            }
+        });
+
+            document.getElementById('transfer-button').addEventListener('click', function() {
+            const recipientUsername = document.getElementById('recipient-username').value.trim();
+            const transferAmount = parseFloat(document.getElementById('transfer-amount').value);
+
+            if (currentUser && transferAmount > 0 && transferAmount <= currentUser.bank) {
+                const recipient = users.find(u => u.username === recipientUsername);
+
+                if (recipient) {
+                    currentUser.bank -= transferAmount;
+                    recipient.bank += transferAmount;
+
+                    updateBalances();
+                    saveUsers();
+                    alert(`Successfully transferred $${transferAmount} to ${recipientUsername}'s bank account.`);
+                } else {
+                    alert("Recipient username not found.");
+                }
+            } else if (transferAmount > currentUser.bank) {
+                alert("You don't have enough money in the bank to transfer that amount.");
+            } else {
+                alert("Please enter a valid transfer amount.");
             }
         });
 

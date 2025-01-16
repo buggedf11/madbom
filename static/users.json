@@ -2,20 +2,20 @@
   {
     "username": "Stan",
     "password": "stan",
-    "bank": 149000,
-    "money": 239000
+    "bank": 1487000,
+    "money": 2724
   },
   {
     "username": "Alex",
     "password": "alex",
-    "bank": 23902,
-    "money": 652600
+    "bank": 24953,
+    "money": 15425698
   },
   {
-    "username": "Ron",
-    "password": "ron",
-    "bank": 0,
-    "money": 100
+    "username": "Fatty",
+    "password": "0808",
+    "bank": 1000,
+    "money": 0
   },
   {
     "username": "Karol",
@@ -32,7 +32,7 @@
   {
     "username": "Mic",
     "password": "mic",
-    "bank": 0,
-    "money": 100
+    "bank": 1,
+    "money": 0
   }
 ]
