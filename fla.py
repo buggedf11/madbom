@@ -26,6 +26,10 @@ def sound():
 def bank():
     return render_template('bank.html')
 
+@app.route('/AdminPage.html')
+def admin():
+    return render_template('AdminPage.html')
+
 @app.route('/blackj.html')
 def blackjack():
     return render_template('blackj.html')

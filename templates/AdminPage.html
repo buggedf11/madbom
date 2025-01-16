@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            overflow: hidden;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 20px 0;
+            border-bottom: #77aaff 3px solid;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-group button {
+            padding: 10px 15px;
+            background-color: #77aaff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/path/to/user.json')
+                .then(response => response.json())
+                .then(data => {
+                    const userSelect = document.getElementById('userSelect');
+                    data.users.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.username;
+                        option.textContent = user.username;
+                        userSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching user data:', error));
+        });
+
+        function populateUserData() {
+            const userSelect = document.getElementById('userSelect');
+            const selectedUser = userSelect.value;
+
+            fetch('/path/to/user.json')
+                .then(response => response.json())
+                .then(data => {
+                    const user = data.users.find(user => user.username === selectedUser);
+                    if (user) {
+                        document.getElementById('username').value = user.username;
+                        document.getElementById('email').value = user.email;
+                    }
+                })
+                .catch(error => console.error('Error fetching user details:', error));
+        }
+
+        function updateUserData() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+
+            if (!username || !email) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            console.log('User data updated:', { username, email });
+            alert('User data has been updated successfully!');
+        }
+
+        function updateBetLimits() {
+            const maxBet = document.getElementById('maxBet').value;
+
+            if (!maxBet || maxBet < 0) {
+                alert('Please enter a valid max bet limit.');
+                return;
+            }
+
+            console.log('Bet limits updated:', { maxBet });
+            alert('Bet limits have been updated successfully!');
+        }
+    </script>
+</body>
+</html>
