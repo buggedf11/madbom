@@ -49,6 +49,21 @@ def save_users():
         json.dump(users, f)
     return jsonify({'success': 'Users saved successfully'}), 200
 
+@app.route('/getMaxBet', methods=['GET'])
+def get_max_bet():
+    game = request.args.get('game')
+    try:
+        with open('static/config.json', 'r') as file:
+            config = json.load(file)
+        max_bet = config['games'].get(game, {}).get('maxBet')
+        if max_bet is None:
+            return jsonify({'error': 'Game not found or maxBet not set'}), 404
+        return jsonify({'maxBet': max_bet}), 200
+    except FileNotFoundError:
+        return jsonify({'error': 'Config file not found'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/updateUser', methods=['POST'])
 def update_user():
     data = request.get_json()
@@ -77,7 +92,7 @@ def update_user():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-    return jsonify({'message': 'User data updated successfully'})
+    return jsonify({'success': 'User updated successfully'}), 200
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=3000, debug=False)

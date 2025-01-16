@@ -1,0 +1,13 @@
+{
+    "games": {
+        "roulette": {
+            "maxBet": 50000
+        },
+        "blackjack": {
+            "maxBet": 25000
+        },
+        "HandL": {
+            "maxBet": 10000
+        }
+    }
+}

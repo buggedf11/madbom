@@ -95,7 +95,7 @@
         <div id="balance">Balance: $0</div>
         <label for="betAmount">Bet Amount:</label>
         <input type="number" id="betAmount" min="1">
-        <h2 id="Min bet 1 Max bet 1000"></h2>
+        <h2 id="betLimit"></h2>
         <div class="buttons">
             <button onclick="playGame('higher')">Higher</button>
             <button onclick="playGame('lower')">Lower</button>
@@ -110,6 +110,16 @@
     let previousCard = null;
     let gamesPlayed = 0;
     let playerWins = 0;
+    let maxBetLimit = 1000; // Default value
+
+    fetch('static/admin/max_bet_limits.json')
+        .then(response => response.json())
+        .then(data => {
+            maxBetLimit = data.games.HandL.maxBet;
+            document.getElementById('betAmount').max = maxBetLimit;
+            document.getElementById('betLimit').innerText = `Max Bet Limit: $${maxBetLimit}`;
+        })
+        .catch(error => console.error('Error fetching max bet limits:', error));
 
     function createDeck() {
         const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
@@ -163,8 +173,8 @@
             alert('You do not have enough money to place this bet.');
             return;
         }
-        if (betAmount > 1000) {
-            alert('You cannot bet more than $1000.');
+        if (betAmount > maxBetLimit) {
+            alert(`You cannot bet more than $${maxBetLimit}.`);
             return;
         }
 
@@ -214,55 +224,66 @@
     }
 
     function login() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
 
-    fetch('/static/users.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch user data.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            users = data;
-            user = users.find(u => u.username === username && u.password === password);
+        fetch('/static/users.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                users = data;
+                user = users.find(u => u.username === username && u.password === password);
 
-            if (user) {
-                // Ensure money is initialized and valid
-                user.money = typeof user.money === 'number' ? user.money : 0;
+                if (user) {
+                    // Ensure money is initialized and valid
+                    user.money = typeof user.money === 'number' ? user.money : 0;
 
-                // Hide login UI and show game UI
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('game').style.display = 'block';
+                    // Hide login UI and show game UI
+                    document.getElementById('login').style.display = 'none';
+                    document.getElementById('game').style.display = 'block';
 
-                // Initialize deck and cards
-                deck = createDeck();
-                shuffleDeck(deck);
-                currentCard = drawCard();
-                previousCard = currentCard; // Start with the same card
+                    // Initialize deck and cards
+                    deck = createDeck();
+                    shuffleDeck(deck);
+                    currentCard = drawCard();
+                    previousCard = currentCard; // Start with the same card
 
-                // Update the UI with user information
-                updateUI();
-            } else {
-                alert('Invalid username or password.');
-            }
-        })
-        .catch(error => {
-            console.error('Error during login:', error);
-            alert('An error occurred while trying to log in.');
-        });
-}
+                    // Update the UI with user information
+                    updateUI();
+                } else {
+                    alert('Invalid username or password.');
+                }
+            })
+            .catch(error => {
+                console.error('Error during login:', error);
+                alert('An error occurred while trying to log in.');
+            });
+    }
 
-function updateUI() {
-    // Update card values
-    document.getElementById('dealerCard').innerText = previousCard ? previousCard.value : '?';
-    document.getElementById('playerCard').innerText = currentCard ? currentCard.value : '?';
+    function updateUI() {
+            // Update card values
+            document.getElementById('dealerCard').innerText = previousCard ? previousCard.value : '?';
+            document.getElementById('playerCard').innerText = currentCard ? currentCard.value : '?';
 
-    // Update balance display
-    document.getElementById('balance').innerText = `Balance: $${user.money}`;
-}
+            // Update balance display
+            document.getElementById('balance').innerText = `Balance: $${user.money}`;
+        }
 
+    function fetchMaxBetLimit() {
+            fetch('static/admin/max_bet_limits.json')
+                .then(response => response.json())
+                .then(data => {
+                    const maxBet = data.games.HandL.maxBet;
+                    document.getElementById('bet').max = maxBet;
+                })
+                .catch(error => console.error('Error fetching max bet limits:', error));
+        }
+
+    window.onload = fetchMaxBetLimit;
     </script>
 </body>
 </html>
