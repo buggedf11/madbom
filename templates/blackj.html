@@ -39,7 +39,7 @@
         <div id="message"></div>
         <button onclick="startGame()">Start Game</button>
         <button id="hit-button" onclick="hit()">Hit</button>
-        <button id="stand-button" onclick="stand()">Stand</button>
+        <button onclick="stand()">Stand</button>
     </div>
 
     <script>
@@ -73,7 +73,6 @@
             dealerHand = [deck.pop(), deck.pop()];
             document.getElementById('message').innerText = '';
             document.getElementById('hit-button').disabled = false;
-            document.getElementById('stand-button').disabled = false; // Enable the stand button
             renderHands();
         }
 
@@ -87,19 +86,18 @@
         }
 
         function hit() {
-            playerHand.push(deck.pop());
-            if (calculateHandValue(playerHand) > 21) {
-                document.getElementById('message').innerText = 'Player Busts! Dealer Wins!';
-                document.getElementById('hit-button').disabled = true;
-                document.getElementById('stand-button').disabled = true; // Disable the stand button
-                saveUsers();
-            }
-            renderHands();
+        playerHand.push(deck.pop());
+        if (calculateHandValue(playerHand) > 21) {
+            document.getElementById('message').innerText = 'Player Busts! Dealer Wins!';
+            document.getElementById('hit-button').disabled = true;
+            document.getElementById('stand-button').disabled = true; // Disable the stand button
+            saveUsers();
         }
+        renderHands();
+    }
 
         function stand() {
             document.getElementById('hit-button').disabled = true;
-            document.getElementById('stand-button').disabled = true; // Disable the stand button
             while (calculateHandValue(dealerHand) < 17) {
                 dealerHand.push(deck.pop());
             }
@@ -173,12 +171,12 @@
         }
 
         function placeBet() {
-            betAmount = parseFloat(document.getElementById('bet-amount').value);
-            if (isNaN(betAmount) || betAmount <= 0 || betAmount > MAX_BET) {
-                alert(`Please enter a valid bet amount up to $${MAX_BET}.`);
-                return;
-            }
+        betAmount = parseFloat(document.getElementById('bet-amount').value);
+        if (isNaN(betAmount) || betAmount <= 0 || betAmount > MAX_BET) {
+            alert(`Please enter a valid bet amount greater than 0 and up to $${MAX_BET}.`);
+            return;
         }
+    }
 
         function saveUsers() {
             fetch('/updateUser', {

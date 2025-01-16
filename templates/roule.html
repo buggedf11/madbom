@@ -10,34 +10,76 @@
             text-align: center;
             margin-top: 50px;
         }
-        #wheel {
-            width: 300px;
-            height: 300px;
-            border: 10px solid #000;
-            border-radius: 50%;
+
+        #wheel-container {
+            width: 80vw;
+            max-width: 300px;
+            height: 80vw;
+            max-height: 300px;
             margin: 0 auto;
             position: relative;
         }
+
+        #wheel {
+            width: 100%;
+            height: 100%;
+            border: 10px solid #000;
+            border-radius: 50%;
+            position: relative;
+            transform: rotate(0deg);
+            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
+        }
+
         .number {
             position: absolute;
-            width: 30px;
-            height: 30px;
+            width: 10%;
+            height: 10%;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 2vw;
             color: #fff;
         }
-        .red { background-color: red; }
-        .black { background-color: black; }
-        .green { background-color: green; }
+
+        .red {
+            background-color: red;
+        }
+
+        .black {
+            background-color: black;
+        }
+
+        .green {
+            background-color: green;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 400px) {
+            .number {
+                font-size: 3vw;
+            }
+        }
     </style>
 </head>
 <body>
     <h1>Roulette Game</h1>
-    <div id="wheel">
-        <!-- Numbers will be dynamically added here -->
+    <div id="wheel-container">
+        <div id="wheel">
+            <!-- Numbers will be dynamically added here -->
+        </div>
     </div>
     <button onclick="spin()">Spin the Wheel</button>
     <p id="result"></p>
@@ -84,20 +126,34 @@
         ];
 
         const wheel = document.getElementById('wheel');
+        let isSpinning = false;
 
+        // Add numbers to the wheel
         numbers.forEach((item, index) => {
             const angle = (index / numbers.length) * 360;
             const numberElement = document.createElement('div');
             numberElement.className = `number ${item.color}`;
-            numberElement.style.transform = `rotate(${angle}deg) translate(130px) rotate(-${angle}deg)`;
+            numberElement.style.transform = `rotate(${angle}deg) translate(40%) rotate(-${angle}deg)`;
             numberElement.innerText = item.number;
             wheel.appendChild(numberElement);
         });
 
         function spin() {
+            if (isSpinning) return;
+
+            isSpinning = true;
+
             const randomIndex = Math.floor(Math.random() * numbers.length);
             const result = numbers[randomIndex];
-            document.getElementById('result').innerText = `The ball landed on ${result.number} (${result.color})`;
+            const spins = 5; // Full spins before stopping
+            const finalAngle = 360 * spins + (randomIndex / numbers.length) * 360;
+
+            wheel.style.transform = `rotate(${finalAngle}deg)`;
+
+            setTimeout(() => {
+                document.getElementById('result').innerText = `The ball landed on ${result.number} (${result.color})`;
+                isSpinning = false;
+            }, 4000); // Match the duration of the spin animation
         }
     </script>
 </body>
