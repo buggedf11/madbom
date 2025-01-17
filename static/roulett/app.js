@@ -16,9 +16,9 @@ function fetchUserData(username, password) {
     .then(response => {
         if (!response.ok) {
             throw new Error('Failed to fetch user data.');
-        }
-        return response.json();
-    })
+		}
+		return response.json();
+	})
     .then(data => {
         const users = data;
         user = users.find(u => u.username === username && u.password === password);
@@ -587,9 +587,12 @@ function setBet(e, n, t, o){
 
 
 function spin() {
-    // Deduct the current bet from the user's money
-    user.money = bankValue;
-    saveUsers();
+    let ball = document.querySelector('.ball');
+    if (!ball) {
+        ball = document.createElement('div');
+        ball.setAttribute('class', 'ball');
+        container.append(ball);
+    }
 
     var winningSpin = Math.floor(Math.random() * 37);
     spinWheel(winningSpin);
@@ -607,27 +610,34 @@ function spin() {
             }
             win(winningSpin, winValue, betTotal);
         }
+		ball.style.animation = 'spin 2s linear';
+		ball.addEventListener('animationend', function() {
+			ball.style.animation = '';
+			let landingNumber = Math.floor(Math.random() * 37); // Assuming 0-36 numbers
+			ball.style.transform = `translateX(${landingNumber * 10}px)`; // Adjust as needed
+			alert(`The ball landed on ${landingNumber}`);
+		}, { once: true });
+	}, { once: true });
 
-        currentBet = 0;
-        document.getElementById('bankSpan').innerText = '' + bankValue.toLocaleString("en-GB") + '';
-        document.getElementById('betSpan').innerText = '' + currentBet.toLocaleString("en-GB") + '';
+	currentBet = 0;
+	document.getElementById('bankSpan').innerText = '' + bankValue.toLocaleString("en-GB") + '';
+	document.getElementById('betSpan').innerText = '' + currentBet.toLocaleString("en-GB") + '';
 
-        let pnClass = (numRed.includes(winningSpin)) ? 'pnRed' : ((winningSpin == 0) ? 'pnGreen' : 'pnBlack');
-        let pnContent = document.getElementById('pnContent');
-        let pnSpan = document.createElement('span');
-        pnSpan.setAttribute('class', pnClass);
-        pnSpan.innerText = winningSpin;
-        pnContent.append(pnSpan);
-        pnContent.scrollLeft = pnContent.scrollWidth;
+	let pnClass = (numRed.includes(winningSpin)) ? 'pnRed' : ((winningSpin == 0) ? 'pnGreen' : 'pnBlack');
+	let pnContent = document.getElementById('pnContent');
+	let pnSpan = document.createElement('span');
+	pnSpan.setAttribute('class', pnClass);
+	pnSpan.innerText = winningSpin;
+	pnContent.append(pnSpan);
+	pnContent.scrollLeft = pnContent.scrollWidth;
 
-        bet = [];
-        numbersBet = [];
-        removeChips();
-        wager = lastWager;
-        if (bankValue == 0 && currentBet == 0) {
-            gameOver();
-        }
-    }, 10000);
+	bet = [];
+	numbersBet = [];
+	removeChips();
+	wager = lastWager;
+	if (bankValue == 0 && currentBet == 0) {
+		gameOver();
+	}
 }
 
 function win(winningSpin, winValue, betTotal){
