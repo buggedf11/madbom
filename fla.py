@@ -10,10 +10,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def index():
     return render_template('index.html')
 
-@app.route('/main.html')
-def main():
-    return render_template('main.html')
-
 @app.route('/calendar.html')
 def calendar():
     return render_template('calendar.html')

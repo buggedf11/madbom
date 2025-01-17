@@ -9,13 +9,13 @@
     "username": "Alex",
     "password": "GEMnec2152",
     "bank": 24953,
-    "money": 259100
+    "money": 432100
   },
   {
     "username": "Fatty",
     "password": "0808",
-    "bank": 39000,
-    "money": 0
+    "bank": -39000,
+    "money": 1
   },
   {
     "username": "Karol",
