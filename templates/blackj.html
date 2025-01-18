@@ -6,7 +6,9 @@
     <title>Blackjack Game</title>
     <style>
         body {
-            background-color: #016D29;
+            background-color: #016D29; /* Casino green */
+            color: white;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -15,29 +17,114 @@
             flex-direction: column;
             text-align: center;
         }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        .home-button {
+            background-color: #f0a500;
+            border: none;
+            color: #000;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 2px 2px 5px #000;
+        }
+
+        .home-button:hover {
+            background-color: #ffc107;
+        }
+
         #login, #game {
-            width: 100%;
+            width: 90%;
             max-width: 400px;
+            background-color: #014220;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #000;
+        }
+
+        #login input, #bet input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 2px 2px 5px #000;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #player-hand, #dealer-hand, #message, #balance {
+            margin: 10px 0;
+        }
+
+        #player-hand, #dealer-hand {
+            padding: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .card {
+            display: inline-block;
+            width: 50px;
+            height: 70px;
+            margin: 5px;
+            border: 2px solid #fff;
+            border-radius: 5px;
+            background-color: white;
+            color: black;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            line-height: 70px;
+            box-shadow: 2px 2px 5px #000;
+        }
+
+        .card.red {
+            color: red;
         }
     </style>
 </head>
 <body>
     <h1>Blackjack Game</h1>
     <button class="home-button" onclick="location.href='index.html'">Home</button>
+
     <div id="login">
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
         <button onclick="login()">Login</button>
     </div>
+
     <div id="game" style="display: none;">
         <div id="balance"></div>
         <div id="bet">
             <input type="number" id="bet-amount" placeholder="Bet Amount" oninput="placeBet()">
+            <button onclick="startGame()">Place Bet & Deal</button>
         </div>
-        <div id="player-hand"></div>
         <div id="dealer-hand"></div>
+        <div id="player-hand"></div>
         <div id="message"></div>
-        <button onclick="startGame()">Start Game</button>
         <button id="hit-button" onclick="hit()" disabled>Hit</button>
         <button id="stand-button" onclick="stand()" disabled>Stand</button>
     </div>
@@ -78,17 +165,23 @@
         }
 
         function renderHands(showDealerCards = false) {
-        document.getElementById('player-hand').innerText = `Player Hand: ${handToString(playerHand)}`;
+            const dealerHandDiv = document.getElementById('dealer-hand');
+            const playerHandDiv = document.getElementById('player-hand');
 
-        if (showDealerCards) {
-            document.getElementById('dealer-hand').innerText = `Dealer Hand: ${handToString(dealerHand)}`;
-        } else {
-            document.getElementById('dealer-hand').innerText = `Dealer Hand: ${dealerHand[0].value} ${dealerHand[0].suit}, [Hidden Card]`;
+            // Render dealer hand
+            dealerHandDiv.innerHTML = `<h3>Dealer Hand:</h3>`;
+            dealerHandDiv.innerHTML += showDealerCards
+                ? dealerHand.map(card => renderCard(card)).join('')
+                : renderCard(dealerHand[0]) + '<div class="card">?</div>';
+
+            // Render player hand
+            playerHandDiv.innerHTML = `<h3>Your Hand:</h3>`;
+            playerHandDiv.innerHTML += playerHand.map(card => renderCard(card)).join('');
         }
-    }
 
-        function handToString(hand) {
-            return hand.map(card => `${card.value}  ${card.suit}`).join(', ');
+        function renderCard(card) {
+            const cardColor = ['♥', '♦'].includes(card.suit) ? 'red' : 'black';
+            return `<div class="card ${cardColor}">${card.value}<br>${card.suit}</div>`;
         }
 
         function hit() {
@@ -96,11 +189,12 @@
         if (calculateHandValue(playerHand) > 21) {
             document.getElementById('message').innerText = 'Player Busts! Dealer Wins!';
             document.getElementById('hit-button').disabled = true;
-            document.getElementById('stand-button').disabled = true; // Disable the stand button
-
+            document.getElementById('stand-button').disabled = true;
+            renderHands(true); // Show dealer's cards
             saveUsers();
+        } else {
+            renderHands(true); // Show dealer's cards
         }
-        renderHands();
     }
 
         function stand() {
@@ -120,7 +214,7 @@
                 user.money += betAmount;
             }
             document.getElementById('stand-button').disabled = true;
-            renderHands();
+            renderHands(true); // Show dealer's cards
             saveUsers();
         }
 
@@ -179,41 +273,38 @@
         }
 
         function placeBet() {
-        betAmount = parseFloat(document.getElementById('bet-amount').value);
-        if (isNaN(betAmount) || betAmount <= 0 || betAmount > MAX_BET) {
-            alert(`Please enter a valid bet amount greater than 0 and up to $${MAX_BET}.`);
-            return;
+            betAmount = parseFloat(document.getElementById('bet-amount').value);
+            if (isNaN(betAmount) || betAmount <= 0 || betAmount > MAX_BET) {
+                alert(`Please enter a valid bet amount greater than 0 and up to $${MAX_BET}.`);
+                return;
+            }
         }
-    }
 
         function saveUsers() {
-        fetch('/updateUser', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username: user.username, money: user.money })
-        })
-        .then(response => {
-            if (response.ok && response.headers.get('Content-Type')?.includes('application/json')) {
-                return response.json();
-            } else if (response.ok) {
-                console.warn('Server responded without JSON content.');
-                return { message: 'User data updated, but no message returned.' };
-            } else {
-                throw new Error(`Server responded with status ${response.status}`);
-            }
-        })
-        .then(data => {
-            console.log(data.message);
-        })
-        .catch(error => {
-            console.error('Error updating user data:', error);
-        });
-    }
-
-
-        
+            fetch('/updateUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: user.username, money: user.money })
+            })
+            .then(response => {
+                if (response.ok && response.headers.get('Content-Type')?.includes('application/json')) {
+                    return response.json();
+                } else if (response.ok) {
+                    console.warn('Server responded without JSON content.');
+                    return { message: 'User data updated, but no message returned.' };
+                } else {
+                    throw new Error(`Server responded with status ${response.status}`);
+                }
+            })
+            .then(data => {
+                console.log(data.message);
+            })
+            .catch(error => {
+                console.error('Error updating user data:', error);
+            });
+        }
     </script>
 </body>
 </html>
