@@ -249,21 +249,28 @@
     }
 
     function saveUsers() {
-        fetch('/updateUser', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username: user.username, money: user.money })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.message);
-        })
-        .catch(error => {
-            console.error('Error updating user data:', error);
-        });
-    }
+            fetch('/updateUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(users)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to update user data.');
+                }
+            })
+            .then(data => {
+                alert('User data updated successfully.');
+                console.log(data.message);
+            })
+            .catch(error => {
+                console.error('Error updating user data:', error);
+            });
+        }
 
     function updateWinRate() {
         const winRate = (playerWins / gamesPlayed) * 100;

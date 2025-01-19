@@ -771,41 +771,27 @@ fetch('/static/users.json')
 		}
 	})
 	.catch(error => console.error('Error fetching user data:', error));
-	function saveUsers(user) {
-		if (!user || !user.username) {
-			console.error('No valid user data provided');
-			return;
-		}
-	
-		// Create data array with user object
-		const userData = [{
-			username: user.username,
-			money: bankValue
-		}];
-	
+	function saveUsers() {
 		fetch('/updateUser', {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json',
-				'Accept': 'application/json'
+				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify(userData) // Send array of user data
+			body: JSON.stringify(users)
 		})
 		.then(response => {
-			if (!response.ok) {
-				throw new Error('Network response was not ok: ' + response.status);
+			if (response.ok) {
+				return response.json();
+			} else {
+				throw new Error('Failed to update user data.');
 			}
-			return response.json();
 		})
 		.then(data => {
-			if (data.success) {
-				console.log('User data saved successfully');
-			} else {
-				console.error('Failed to save user data:', data.error);
-			}
+			alert('User data updated successfully.');
+			console.log(data.message);
 		})
 		.catch(error => {
-			console.error('Error saving user data:', error);
+			console.error('Error updating user data:', error);
 		});
 	}
 

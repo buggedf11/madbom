@@ -280,31 +280,29 @@
             }
         }
 
-        function saveUsers() {
-            fetch('/updateUser', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username: user.username, money: user.money })
-            })
-            .then(response => {
-                if (response.ok && response.headers.get('Content-Type')?.includes('application/json')) {
-                    return response.json();
-                } else if (response.ok) {
-                    console.warn('Server responded without JSON content.');
-                    return { message: 'User data updated, but no message returned.' };
-                } else {
-                    throw new Error(`Server responded with status ${response.status}`);
-                }
-            })
-            .then(data => {
-                console.log(data.message);
-            })
-            .catch(error => {
-                console.error('Error updating user data:', error);
-            });
-        }
+    function saveUsers() {
+        fetch('/updateUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(users)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Failed to update user data.');
+            }
+        })
+        .then(data => {
+            alert('User data updated successfully.');
+            console.log(data.message);
+        })
+        .catch(error => {
+            console.error('Error updating user data:', error);
+        });
+    }
     </script>
 </body>
 </html>
