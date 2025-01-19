@@ -1,49 +1,33 @@
 from flask import Flask, render_template, jsonify, send_from_directory, request
 import json
+from flask_sqlalchemy import SQLAlchemy
+
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'static/downloads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    money = db.Column(db.Float, default=0)
+
+class InventoryItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    item_name = db.Column(db.String(120), nullable=False)
+    item_rarity = db.Column(db.String(50), nullable=False)
+    item_value = db.Column(db.Float, nullable=False)
+    
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/calendar.html')
-def calendar():
-    return render_template('calendar.html')
 
-@app.route('/sound.html')
-def sound():
-    return render_template('sound.html')
-
-@app.route('/bank.html')
-def bank():
-    return render_template('bank.html')
-
-@app.route('/AdminPage.html')
-def admin():
-    return render_template('AdminPage.html')
-
-@app.route('/blackj.html')
-def blackjack():
-    return render_template('blackj.html')
-
-@app.route('/higherorlowwer.html')
-def higherorlowwer():
-    return render_template('higherorlowwer.html')
-
-@app.route('/static/users.json')
-def get_users():
-    return send_from_directory('static', 'users.json')
-
-@app.route('/roule.html')
-def roule():
-    return render_template("roule.html")
-
-@app.route('/case.html')
-def case():
-    return render_template("case.html")
 
 @app.route('/api/save_users', methods=['POST'])
 def save_users():
