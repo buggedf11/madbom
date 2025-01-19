@@ -104,6 +104,52 @@
             </div>
         </div>
     </div>
+    <script>
+    function resetAllBalances() {
+        const resetAmount = Number(document.getElementById('resetAmount').value);
+        if (isNaN(resetAmount)) {
+            alert('Please enter a valid number');
+            return;
+        }
+
+        // Update the local users array first
+        users.forEach(user => {
+            user.bank = resetAmount;
+            user.money = resetAmount;
+        });
+
+        // Then save to the server using the same endpoint as saveUsers
+        fetch('/updateUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(users)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Failed to reset balances.');
+            }
+        })
+        .then(data => {
+            alert('All balances have been reset successfully.');
+            populateUserData(); // Refresh the user data
+            console.log(data.message);
+        })
+        .catch(error => {
+            console.error('Error resetting balances:', error);
+            alert('Failed to reset balances');
+        });
+    }
+
+    </script>
+    <div class="container">
+        <label for="resetAmount">Reset Amount:</label>
+        <input type="number" id="resetAmount" placeholder="Enter amount">
+        <button onclick="resetAllBalances()">Reset All Balances</button>
+    </div>
     <div class="container">
         <h2>Max Bet Limits</h2>
         <table>

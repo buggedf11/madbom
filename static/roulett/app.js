@@ -106,7 +106,7 @@ function gameOver(user){
 
 	let nBtn = document.createElement('div');
 	nBtn.setAttribute('class', 'nBtn');
-	nBtn.innerText = 'Play again';	
+	nBtn.innerText = 'Play again';    
 	nBtn.onclick = function(){
 		resetGame(user);
 	};
