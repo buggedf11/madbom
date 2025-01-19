@@ -41,6 +41,10 @@ def get_users():
 def roule():
     return render_template("roule.html")
 
+@app.route('/case.html')
+def case():
+    return render_template("case.html")
+
 @app.route('/api/save_users', methods=['POST'])
 def save_users():
     users = request.json
