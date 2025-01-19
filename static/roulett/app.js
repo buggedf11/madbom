@@ -787,7 +787,7 @@ fetch('/static/users.json')
 			}
 		})
 		.then(data => {
-			alert('User data updated successfully.');
+            console.log('User data updated successfully.');
 			console.log(data.message);
 		})
 		.catch(error => {
