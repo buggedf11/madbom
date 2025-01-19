@@ -508,22 +508,25 @@ function setBet(e, n, t, o, user) {
 	wager = (bankValue < wager) ? bankValue : wager;
 	const maxBet = 50000; // Hard-coded max bet limit
 	
-	// Calculate new total bet amount including current wager
-	let totalBetAfterWager = currentBet + wager;
-	let existingBetAmount = 0;
-
-	// Check if there's an existing bet on the same number/type and subtract it from total
-	for (let i = 0; i < bet.length; i++) {
-		if (bet[i].numbers == n && bet[i].type == t) {
-			existingBetAmount = bet[i].amt;
-			totalBetAfterWager = currentBet + wager - existingBetAmount;
-			break;
-		}
+	// Find existing bet on the same number/type
+	let existingBet = bet.find(b => b.numbers === n && b.type === t);
+	let existingBetAmount = existingBet ? existingBet.amt : 0;
+	
+	// Calculate what the total amount would be after adding this wager
+	let newBetAmount = existingBetAmount + wager;
+	
+	// Check if this specific bet would exceed the max bet limit
+	if (newBetAmount > maxBet) {
+		alert(`Maximum bet limit of ${maxBet.toLocaleString("en-GB")} for a single bet reached`);
+		return;
 	}
-
-	// Check if the total bet would exceed the max bet limit
+	
+	// Calculate total bet across all bets
+	let totalBetAfterWager = currentBet + wager;
+	
+	// Check if total bets would exceed the max bet limit
 	if (totalBetAfterWager > maxBet) {
-		alert(`Maximum bet limit of ${maxBet.toLocaleString("en-GB")} reached`);
+		alert(`Maximum total bet limit of ${maxBet.toLocaleString("en-GB")} reached`);
 		return;
 	}
 
