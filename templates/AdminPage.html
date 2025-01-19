@@ -105,44 +105,53 @@
         </div>
     </div>
     <script>
-    function resetAllBalances() {
-        const resetAmount = Number(document.getElementById('resetAmount').value);
-        if (isNaN(resetAmount)) {
-            alert('Please enter a valid number');
-            return;
+async function resetAllBalances() {
+    const resetAmount = Number(document.getElementById('resetAmount').value);
+    if (isNaN(resetAmount)) {
+        alert('Please enter a valid number');
+        return;
+    }
+
+    try {
+        // First fetch the current users
+        const response = await fetch('/static/users.json');
+        if (!response.ok) {
+            throw new Error('Failed to fetch user data');
         }
+        const users = await response.json();
 
-        // Update the local users array first
-        users.forEach(user => {
-            user.bank = resetAmount;
-            user.money = resetAmount;
-        });
+        // Update each user's balances
+        const updatedUsers = users.map(user => ({
+            ...user,
+            bank: 0,
+            money: resetAmount
+        }));
 
-        // Then save to the server using the same endpoint as saveUsers
-        fetch('/updateUser', {
+        // Save the updated users
+        const saveResponse = await fetch('/api/save_users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(users)
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Failed to reset balances.');
-            }
-        })
-        .then(data => {
-            alert('All balances have been reset successfully.');
-            populateUserData(); // Refresh the user data
-            console.log(data.message);
-        })
-        .catch(error => {
-            console.error('Error resetting balances:', error);
-            alert('Failed to reset balances');
+            body: JSON.stringify(updatedUsers)
         });
+
+        if (!saveResponse.ok) {
+            throw new Error('Failed to save user data');
+        }
+
+        const result = await saveResponse.json();
+        if (result.success) {
+            alert('All balances have been reset successfully');
+            populateUserData(); // Refresh the user list
+        } else {
+            throw new Error('Failed to reset balances');
+        }
+    } catch (error) {
+        console.error('Error resetting balances:', error);
+        alert('Failed to reset balances: ' + error.message);
     }
+}
 
     </script>
     <div class="container">
