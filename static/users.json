@@ -3,36 +3,42 @@
     "username": "Stan",
     "password": "sjd",
     "bank": 0,
-    "money": 1000
+    "money": 1000,
+    "inventory": []
   },
   {
     "username": "Alex",
     "password": "GEMnec2152",
     "bank": 0,
-    "money": 1000
+    "money": 7000,
+    "inventory": []
   },
   {
     "username": "Fatty",
     "password": "0808",
     "bank": 0,
-    "money": 1000
+    "money": 1000,
+    "inventory": []
   },
   {
     "username": "Karol",
     "password": "karol",
     "bank": 0,
-    "money": 1000
+    "money": 1000,
+    "inventory": []
   },
   {
     "username": "Chris",
     "password": "chris",
     "bank": 0,
-    "money": 1000
+    "money": 1000,
+    "inventory": []
   },
   {
     "username": "Mic",
     "password": "admin",
     "bank": 0,
-    "money": 1000
+    "money": 1000,
+    "inventory": []
   }
 ]
