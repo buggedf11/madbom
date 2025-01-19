@@ -1,5 +1,4 @@
 from flask import Flask, render_template, jsonify, send_from_directory, request
-import os
 import json
 
 app = Flask(__name__)
@@ -64,35 +63,64 @@ def get_max_bet():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/updateUser', methods=['POST'])
-def update_user():
-    data = request.get_json()
-    username = data.get('username')
-    money = data.get('money')
-
+@app.route('/updateBetLimits', methods=['POST'])
+def update_bet_limits():
     try:
-        with open('static/users.json', 'r') as file:
-            users = json.load(file)
-    except FileNotFoundError:
-        return jsonify({'error': 'User data file not found'}), 500
+        bet_limits = request.json.get('games')
+        if bet_limits is None:
+            return jsonify({'error': 'Invalid data'}), 400
 
-    user_found = False
-    for user in users:
-        if user['username'] == username:
-            user['money'] = money
-            user_found = True
-            break
+        with open('static/admin/max_bet_limits.json', 'r+') as file:
+            data = json.load(file)
+            data['games'] = bet_limits
+            file.seek(0)
+            json.dump(data, file, indent=4)
+            file.truncate()
 
-    if not user_found:
-        return jsonify({'error': 'User not found'}), 404
-
-    try:
-        with open('static/users.json', 'w') as file:
-            json.dump(users, file, indent=2)
+        return jsonify({'message': 'Bet limits updated successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-    return jsonify({'success': 'User updated successfully'}), 200
+@app.route('/updateUser', methods=['POST'])
+def update_user():
+    try:
+        data = request.get_json()
+
+        if not isinstance(data, list):
+            return jsonify({'error': 'Invalid data format: Expected a list'}), 400
+
+        with open('static/users.json', 'r') as file:
+            users = json.load(file)
+
+        updated_users = []
+        for item in data:
+            username = item.get('username')
+            money = item.get('money')
+
+            if not username or not isinstance(money, (int, float)):
+                return jsonify({'error': 'Invalid user data: username must be string and money must be number'}), 400
+
+            user_found = False
+            for user in users:
+                if user['username'] == username:
+                    user['money'] = money
+                    user_found = True
+                    updated_users.append(user)
+                    break
+
+            if not user_found:
+                return jsonify({'error': f'User {username} not found'}), 404
+
+        with open('static/users.json', 'w') as file:
+            json.dump(users, file, indent=2)
+
+        return jsonify({'success': 'Users updated successfully', 'updatedUsers': updated_users}), 200
+
+    except FileNotFoundError:
+        return jsonify({'error': 'User data file not found'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=3000, debug=False)

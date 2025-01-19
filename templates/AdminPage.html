@@ -73,64 +73,201 @@
     <header>
         <h1>Admin Dashboard</h1>
     </header>
+    <div class="container">
+        <div class="form-group">
+            <label for="userSelect">Select User:</label>
+            <select id="userSelect" onchange="populateUserDetails()">
+                <option value="">Select a user</option>
+            </select>
+        </div>
 
+        <div id="userDetails" style="display: none;">
+            <h2>User Details</h2>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" disabled>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="text" id="password">
+            </div>
+            <div class="form-group">
+                <label for="bank">Bank Balance:</label>
+                <input type="number" id="bank">
+            </div>
+            <div class="form-group">
+                <label for="money">Money:</label>
+                <input type="number" id="money">
+            </div>
+            <div class="form-group">
+                <button onclick="updateUserData()">Update User Data</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h2>Max Bet Limits</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Game</th>
+                    <th>Max Bet Limit</th>
+                </tr>
+            </thead>
+            <tbody id="betLimitsTableBody">
+                <!-- Bet limits will be populated here -->
+            </tbody>
+        </table>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('/path/to/user.json')
-                .then(response => response.json())
+        let betLimits = {};
+
+        function populateBetLimits() {
+            fetch('static/admin/max_bet_limits.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch bet limits.');
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    betLimits = data.games;
+                    const betLimitsTableBody = document.getElementById('betLimitsTableBody');
+                    betLimitsTableBody.innerHTML = '';
+                    for (const game in betLimits) {
+                        const row = document.createElement('tr');
+                        const gameCell = document.createElement('td');
+                        gameCell.textContent = game;
+                        const limitCell = document.createElement('td');
+                        const input = document.createElement('input');
+                        input.type = 'number';
+                        input.value = betLimits[game].maxBet;
+                        input.onchange = (event) => updateBetLimit(game, event.target.value);
+                        limitCell.appendChild(input);
+                        row.appendChild(gameCell);
+                        row.appendChild(limitCell);
+                        betLimitsTableBody.appendChild(row);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching bet limits:', error);
+                });
+        }
+
+        function updateBetLimit(game, newLimit) {
+            betLimits[game].maxBet = Number(newLimit);
+            saveBetLimits();
+        }
+
+        function saveBetLimits() {
+            fetch('/updateBetLimits', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ games: betLimits })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to update bet limits.');
+                }
+            })
+            .then(data => {
+                alert('Bet limits updated successfully.');
+                console.log(data.message);
+            })
+            .catch(error => {
+                console.error('Error updating bet limits:', error);
+            });
+        }
+
+        // Populate bet limits on page load
+        populateBetLimits();
+    </script>
+    <script>
+        let users = [];
+
+        function populateUserData() {
+            fetch('/static/users.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch user data.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    users = data;
                     const userSelect = document.getElementById('userSelect');
-                    data.users.forEach(user => {
+                    userSelect.innerHTML = '<option value="">Select a user</option>';
+                    users.forEach(user => {
                         const option = document.createElement('option');
                         option.value = user.username;
                         option.textContent = user.username;
                         userSelect.appendChild(option);
                     });
                 })
-                .catch(error => console.error('Error fetching user data:', error));
-        });
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                });
+        }
 
-        function populateUserData() {
-            const userSelect = document.getElementById('userSelect');
-            const selectedUser = userSelect.value;
+        function populateUserDetails() {
+            const selectedUser = document.getElementById('userSelect').value;
+            const user = users.find(u => u.username === selectedUser);
 
-            fetch('/path/to/user.json')
-                .then(response => response.json())
-                .then(data => {
-                    const user = data.users.find(user => user.username === selectedUser);
-                    if (user) {
-                        document.getElementById('username').value = user.username;
-                        document.getElementById('email').value = user.email;
-                    }
-                })
-                .catch(error => console.error('Error fetching user details:', error));
+            if (user) {
+                document.getElementById('username').value = user.username;
+                document.getElementById('password').value = user.password || '';
+                document.getElementById('bank').value = user.bank || 0;
+                document.getElementById('money').value = user.money || 0;
+                document.getElementById('userDetails').style.display = 'block';
+            } else {
+                document.getElementById('userDetails').style.display = 'none';
+            }
         }
 
         function updateUserData() {
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
+            const selectedUser = document.getElementById('userSelect').value;
+            const user = users.find(u => u.username === selectedUser);
 
-            if (!username || !email) {
-                alert('Please fill in all fields.');
-                return;
+            if (user) {
+                user.password = document.getElementById('password').value;
+                user.bank = Number(document.getElementById('bank').value);
+                user.money = Number(document.getElementById('money').value);
+                saveUsers();
+            } else {
+                alert('Please select a valid user.');
             }
-
-            console.log('User data updated:', { username, email });
-            alert('User data has been updated successfully!');
         }
 
-        function updateBetLimits() {
-            const maxBet = document.getElementById('maxBet').value;
-
-            if (!maxBet || maxBet < 0) {
-                alert('Please enter a valid max bet limit.');
-                return;
-            }
-
-            console.log('Bet limits updated:', { maxBet });
-            alert('Bet limits have been updated successfully!');
+        function saveUsers() {
+            fetch('/updateUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(users)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to update user data.');
+                }
+            })
+            .then(data => {
+                alert('User data updated successfully.');
+                console.log(data.message);
+            })
+            .catch(error => {
+                console.error('Error updating user data:', error);
+            });
         }
+
+        // Initial population of user data
+        populateUserData();
     </script>
 </body>
 </html>

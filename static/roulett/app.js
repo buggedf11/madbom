@@ -14,6 +14,7 @@ container.setAttribute('id', 'container');
 document.body.append(container);
 
 createLoginForm();
+fetchMaxBetLimit();
 
 function createLoginForm() {
 	let loginForm = document.createElement('div');
@@ -505,11 +506,28 @@ function clearBet(){
 function setBet(e, n, t, o, user) {
 	lastWager = wager;
 	wager = (bankValue < wager) ? bankValue : wager;
-	if (wager > 0) {
-		if (currentBet + wager > 50000) {
-			alert('Maximum bet limit of 50,000 reached');
-			return;
+	const maxBet = 50000; // Hard-coded max bet limit
+	
+	// Calculate new total bet amount including current wager
+	let totalBetAfterWager = currentBet + wager;
+	let existingBetAmount = 0;
+
+	// Check if there's an existing bet on the same number/type and subtract it from total
+	for (let i = 0; i < bet.length; i++) {
+		if (bet[i].numbers == n && bet[i].type == t) {
+			existingBetAmount = bet[i].amt;
+			totalBetAfterWager = currentBet + wager - existingBetAmount;
+			break;
 		}
+	}
+
+	// Check if the total bet would exceed the max bet limit
+	if (totalBetAfterWager > maxBet) {
+		alert(`Maximum bet limit of ${maxBet.toLocaleString("en-GB")} reached`);
+		return;
+	}
+
+	if (wager > 0) {
 		if (!container.querySelector('.spinBtn')) {
 			let spinBtn = document.createElement('div');
 			spinBtn.setAttribute('class', 'spinBtn');
@@ -520,45 +538,53 @@ function setBet(e, n, t, o, user) {
 			};
 			container.append(spinBtn);
 		}
+
 		bankValue = bankValue - wager;
 		currentBet = currentBet + wager;
 		document.getElementById('bankSpan').innerText = '' + bankValue.toLocaleString("en-GB") + '';
 		document.getElementById('betSpan').innerText = '' + currentBet.toLocaleString("en-GB") + '';
+
+		// Update existing bet or create new one
+		let betUpdated = false;
 		for (let i = 0; i < bet.length; i++) {
 			if (bet[i].numbers == n && bet[i].type == t) {
 				bet[i].amt = bet[i].amt + wager;
-				let chipColour = (bet[i].amt < 5) ? 'red' : ((bet[i].amt < 10) ? 'blue' : ((bet[i].amt < 100) ? 'orange' : 'gold'));
+				let chipColour = (bet[i].amt < 5000) ? 'red' : ((bet[i].amt < 10000) ? 'blue' : ((bet[i].amt < 15000) ? 'orange' : 'gold'));
 				e.querySelector('.chip').style.cssText = '';
 				e.querySelector('.chip').setAttribute('class', 'chip ' + chipColour);
 				let chipSpan = e.querySelector('.chipSpan');
 				chipSpan.innerText = bet[i].amt;
-				return;
-			}
-		}
-		var obj = {
-			amt: wager,
-			type: t,
-			odds: o,
-			numbers: n
-		};
-		bet.push(obj);
-
-		let numArray = n.split(',').map(Number);
-		for (let i = 0; i < numArray.length; i++) {
-			if (!numbersBet.includes(numArray[i])) {
-				numbersBet.push(numArray[i]);
+				betUpdated = true;
+				break;
 			}
 		}
 
-		if (!e.querySelector('.chip')) {
-			let chipColour = (wager < 5) ? 'red' : ((wager < 10) ? 'blue' : ((wager < 100) ? 'orange' : 'gold'));
-			let chip = document.createElement('div');
-			chip.setAttribute('class', 'chip ' + chipColour);
-			let chipSpan = document.createElement('span');
-			chipSpan.setAttribute('class', 'chipSpan');
-			chipSpan.innerText = wager;
-			chip.append(chipSpan);
-			e.append(chip);
+		if (!betUpdated) {
+			var obj = {
+				amt: wager,
+				type: t,
+				odds: o,
+				numbers: n
+			};
+			bet.push(obj);
+
+			let numArray = n.split(',').map(Number);
+			for (let i = 0; i < numArray.length; i++) {
+				if (!numbersBet.includes(numArray[i])) {
+					numbersBet.push(numArray[i]);
+				}
+			}
+
+			if (!e.querySelector('.chip')) {
+				let chipColour = (wager < 5000) ? 'red' : ((wager < 10000) ? 'blue' : ((wager < 15000) ? 'orange' : 'gold'));
+				let chip = document.createElement('div');
+				chip.setAttribute('class', 'chip ' + chipColour);
+				let chipSpan = document.createElement('span');
+				chipSpan.setAttribute('class', 'chipSpan');
+				chipSpan.innerText = wager;
+				chip.append(chipSpan);
+				e.append(chip);
+			}
 		}
 	}
 }
@@ -722,7 +748,7 @@ fetch('/static/users.json')
 		if (!response.ok) {
 			if (response.status === 404) {
 				console.error('Error: File not found');
-				return { money: 1000 }; // Default value if file not found
+				return [{ money: 1000, username: 'guest', password: '' }]; // Default value in array format
 			}
 			throw new Error('Network response was not ok');
 		}
@@ -733,60 +759,59 @@ fetch('/static/users.json')
 		}
 	})
 	.then(data => {
-		bankValue = data.money !== undefined ? data.money : 1000;
+		// Ensure data is always an array
+		const users = Array.isArray(data) ? data : [data];
+		const firstUser = users[0] || { money: 1000 };
+		bankValue = firstUser.money !== undefined ? firstUser.money : 1000;
 		if (document.getElementById('bankSpan')) {
 			document.getElementById('bankSpan').innerText = '' + bankValue.toLocaleString("en-GB") + '';
 		}
-	})
-	.catch(error => console.error('Error fetching user data:', error));
-
-	fetch('/static/users.json')
-	.then(response => {
-		if (!response.ok) {
-			if (response.status === 404) {
-				console.error('Error: File not found');
-				return { money: 1000, username: 'guest', password: '' }; // Default values if file not found
-			}
-			throw new Error('Network response was not ok');
-		}
-		if (response.headers.get('content-type')?.includes('application/json')) {
-			return response.json();
-		} else {
-			throw new Error('Response is not JSON');
-		}
-	})
-	.then(data => {
-		bankValue = data.money !== undefined ? data.money : 1000;
-		if (document.getElementById('bankSpan')) {
-			document.getElementById('bankSpan').innerText = '' + bankValue.toLocaleString("en-GB") + '';
-		}
-		console.log('Username:', data.username);
-		console.log('Password:', data.password);
 	})
 	.catch(error => console.error('Error fetching user data:', error));
 	function saveUsers(user) {
+		if (!user || !user.username) {
+			console.error('No valid user data provided');
+			return;
+		}
+	
+		// Create data array with user object
+		const userData = [{
+			username: user.username,
+			money: bankValue
+		}];
+	
 		fetch('/updateUser', {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
 			},
-			body: JSON.stringify({ username: user.username, money: bankValue })
+			body: JSON.stringify(userData) // Send array of user data
 		})
 		.then(response => {
-			if (response.ok && response.headers.get('Content-Type')?.includes('application/json')) {
-				return response.json();
-			} else if (response.ok) {
-				console.warn('Server responded without JSON content.');
-				return { message: 'User data updated, but no message returned.' };
-			} else {
-				throw new Error(`Server responded with status ${response.status}`);
+			if (!response.ok) {
+				throw new Error('Network response was not ok: ' + response.status);
 			}
+			return response.json();
 		})
 		.then(data => {
-			console.log(data.message);
+			if (data.success) {
+				console.log('User data saved successfully');
+			} else {
+				console.error('Failed to save user data:', data.error);
+			}
 		})
 		.catch(error => {
-			console.error('Error updating user data:', error);
+			console.error('Error saving user data:', error);
 		});
 	}
 
+	fetchMaxBetLimit();
+
+	function fetchMaxBetLimit() {
+		const maxBet = 50000;
+		const betSpanElement = document.getElementById('betSpan');
+		if (betSpanElement) {
+			betSpanElement.setAttribute('max', maxBet.toString());
+		}
+	}
