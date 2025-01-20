@@ -29,17 +29,12 @@
 
         .user-info {
             font-size: 1em;
-            color: #fff;
-        }
-
-        nav {
-            display: flex;
-            gap: 15px;
         }
 
         nav a {
             text-decoration: none;
             color: #fff;
+            margin: 0 10px;
             font-size: 1em;
             transition: color 0.3s;
         }
@@ -52,11 +47,9 @@
             padding: 20px;
         }
 
-        /* Section Titles */
         h2 {
             margin-top: 0;
             font-size: 2em;
-            color: #fff;
         }
 
         /* Case Grid */
@@ -84,11 +77,6 @@
             border-radius: 8px;
         }
 
-        .case h3 {
-            margin: 10px 0;
-            font-size: 1.2em;
-        }
-
         .case button {
             background: #50c878;
             color: #fff;
@@ -96,6 +84,7 @@
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
+            margin: 10px 0;
             transition: background 0.3s;
         }
 
@@ -103,48 +92,88 @@
             background: #45b468;
         }
 
-        /* Inventory Grid */
-        .inventory {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
         }
 
-        .inventory-item {
+        .modal-content {
             background: #323250;
-            padding: 10px;
+            margin: 10% auto;
+            padding: 20px;
             border-radius: 8px;
-            text-align: center;
+            width: 80%;
+            max-width: 600px;
         }
 
-        .inventory-item img {
-            max-width: 100%;
-            border-radius: 8px;
-        }
-
-        .inventory-item button {
-            margin-top: 10px;
-            background: #e74c3c;
-            color: #fff;
-            border: none;
-            padding: 5px 15px;
-            border-radius: 5px;
+        .close {
+            float: right;
+            font-size: 1.5em;
             cursor: pointer;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .cases-grid,
-            .inventory {
-                grid-template-columns: 1fr;
-            }
-
-            .case button,
-            .inventory-item button {
-                width: 100%;
-            }
+        .preview-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
         }
+
+        /* Animation Styles */
+        .animation-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 600px;
+            height: 120px;
+            background: #282846;
+            border: 3px solid #50c878;
+            border-radius: 10px;
+            overflow: hidden;
+            z-index: 100;
+        }
+
+        .animation-inner {
+            display: flex;
+            width: 100%; /* Ensure the inner container spans the full width */
+            animation: spin 5s linear infinite; /* Use linear timing function for smooth animation */
+        }
+
+        .animation-item {
+            flex: 1; /* Allow items to grow and fill the container */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .animation-item img {
+            max-width: 80px;
+            max-height: 80px;
+        }
+
+        .highlight {
+            border: 2px solid #50c878;
+            border-radius: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); } /* Move the items to the left by 100% of their width */
+        }
+
+    .inventory-item img {
+        width: 100px; /* Set a fixed width */
+        height: 100px; /* Set a fixed height */
+        object-fit: cover; /* Ensure the image covers the area without distortion */
+    }
+</style>
     </style>
 </head>
 <body>
@@ -160,231 +189,187 @@
         </nav>
     </header>
 
-    <div id="game" style="display: none;">
+    <div id="login" class="container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
     </div>
-    <div class="container">
+    <div id="game" class="container" style="display: none;">
         <section id="cases">
             <h2>Available Cases</h2>
-            <div class="case">
-                <img src="/static/case/royal.avif" alt="Item Image">
-                <h3>Stan's Dad's Bank</h3>
-                <button class="preview-button" data-case="royal">Preview</button>
-                <button>Open Case</button>
-            </div>
-            <div class="case">
-                <img src="/static/case/supman.avif" alt="Item Image">
-                <h3>Ron's Prison</h3>
-                <button class="preview-button" data-case="gold">Preview</button>
-                <button>Open Case</button>
+            <div class="cases-grid">
+                <div class="case">
+                    <img src="/static/case/royal.avif" alt="Case Image">
+                    <h3>Stan's Dad's Bank</h3>
+                    <p>Price: $50</p>
+                    <button class="preview-button" data-case="royal">Preview</button>
+                    <button class="open-case-button" data-price="50">Open Case</button>
+                </div>
+                <div class="case">
+                    <img src="/static/case/supman.avif" alt="Case Image">
+                    <h3>Ron's Prison</h3>
+                    <p>Price: $75</p>
+                    <button class="preview-button" data-case="gold">Preview</button>
+                    <button class="open-case-button" data-price="75">Open Case</button>
+                </div>
             </div>
         </section>
     </div>
 
-    <!-- Preview Modal -->
-    <div id="previewModal" class="modal" style="display: none;">
+    <div id="previewModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Case Preview</h2>
-            <div class="preview-items">
-                <!-- Preview items will be dynamically added here -->
+            <div class="preview-items"></div>
+        </div>
+    </div>
+
+    <div id="animation" class="animation-container" style="display: none;">
+        <div class="animation-inner">
+            <div class="animation-inner">
+                <!-- Dynamic items will be added here -->
             </div>
         </div>
     </div>
-</body>
-</html>
-<style>
-    /* Modal Styles */
-    .modal {
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.7);
-    }
 
-    .modal-content {
-        background-color: #323250;
-        margin: 15% auto;
-        padding: 20px;
-        border-radius: 8px;
-        width: 80%;
-        max-width: 600px;
-    }
+    <script>
+        const caseItems = {
+            royal: [
+                { name: "Fittty", img: "/static/case/fitty.png", chance: 0.7 },
+                { name: "Stan's Huzz'", img: "static/case/stans Huz.png", chance: 0.3 }
+            ],
+            gold: [
+                { name: "Ron Pork", img: "/static/case/ronpnose.png", chance: 0.6 },
+                { name: "Chub Master", img: "/static/case/chubmaster.png", chance: 0.4 }
+            ]
+        };
 
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .close:hover {
-        color: #fff;
-    }
-
-    .preview-items {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-        margin-top: 20px;
-    }
-</style>
-
-<script>
-// Define the items for each case
-const caseItems = {
-    royal: [
-        { name: "Fittty", img: "static/case/fitty.png" },
-        { name: "Stan's Huzz'", img: "static/case/stans Huz.png" }
-    ],
-    gold: [
-        { name: "Ron Pork", img: "static/case/ronpnose.png" },
-        { name: "Chub Master", img: "static/case/chubmaster.png" }
-    ]
-};
-
-// Handle the "Preview" button click
-document.querySelectorAll('.preview-button').forEach(button => {
-    button.onclick = function() {
-        const caseType = button.getAttribute('data-case'); // Get the case type (e.g., 'royal' or 'gold')
-        const previewItems = caseItems[caseType]; // Get the items for that case
-
-        // Clear the current preview items
-        const previewContainer = document.querySelector('.preview-items');
-        previewContainer.innerHTML = ''; // Reset preview content
-
-        // Populate the modal with items
-        previewItems.forEach(item => {
-            const itemElement = document.createElement('div');
-            itemElement.classList.add('inventory-item');
-
-            const itemImage = document.createElement('img');
-            itemImage.src = item.img;
-            itemElement.appendChild(itemImage);
-
-            const itemName = document.createElement('h4');
-            itemName.textContent = item.name;
-            itemElement.appendChild(itemName);
-
-            previewContainer.appendChild(itemElement);
+        // Modal Logic
+        const previewModal = document.getElementById('previewModal');
+        const previewItemsContainer = previewModal.querySelector('.preview-items');
+        document.querySelectorAll('.preview-button').forEach(button => {
+            button.onclick = () => {
+                const caseType = button.getAttribute('data-case');
+                previewItemsContainer.innerHTML = caseItems[caseType]
+                    .map(item => `
+                        <div class="inventory-item">
+                            <img src="${item.img}" alt="${item.name}">
+                            <h4>${item.name}</h4>
+                        </div>
+                    `).join('');
+                previewModal.style.display = 'block';
+            };
         });
 
-        // Show the modal
-        document.getElementById('previewModal').style.display = 'block';
-    };
-});
+        previewModal.querySelector('.close').onclick = () => previewModal.style.display = 'none';
 
-// Close the modal
-document.querySelector('.close').onclick = function() {
-    document.getElementById('previewModal').style.display = 'none';
-};
+        // Open Case Logic with Animation
+        document.querySelectorAll('.open-case-button').forEach(button => {
+            button.onclick = () => {
+                const casePrice = parseFloat(button.getAttribute('data-price'));
+                let userBalance = parseFloat(document.getElementById('balance').innerText.replace('Balance: $', ''));
 
-// Close the modal if clicking outside
-window.onclick = function(event) {
-    if (event.target == document.getElementById('previewModal')) {
-        document.getElementById('previewModal').style.display = 'none';
-    }
-};
+                if (userBalance < casePrice) {
+                    alert('Insufficient balance!');
+                    return;
+                }
 
+                userBalance -= casePrice;
+                document.getElementById('balance').innerText = `Balance: $${userBalance}`;
 
+                const caseType = button.previousElementSibling.getAttribute('data-case');
+                const items = caseItems[caseType];
 
+                // Display animation
+                const animationContainer = document.getElementById('animation');
+                const animationInner = animationContainer.querySelector('.animation-inner');
+                animationInner.innerHTML = ''; // Clear previous items
 
-</script>
-<div id="loginModal" class="modal">
-    <div class="modal-content">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <input type="text" id="username" placeholder="Username" required>
-            <input type="password" id="password" placeholder="Password" required>
-            <button type="submit">Login</button>
-        </form>
-    </div>
-</div>
+                // Populate animation with enough items
+                const totalItems = 20; // Define enough items for smooth scrolling
+                for (let i = 0; i < totalItems; i++) {
+                    const randomItem = items[Math.floor(Math.random() * items.length)];
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('animation-item');
+                    itemDiv.innerHTML = `<img src="${randomItem.img}" alt="${randomItem.name}">`;
+                    animationInner.appendChild(itemDiv);
+                }
 
-<style>
-    #loginModal {
-        display: block;
-        position: fixed;
-        z-index: 9999;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.7);
-    }
-    
-    #loginForm {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    #loginForm input {
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #50c878;
-        background: #282846;
-        color: #fff;
-    }
-    
-    #loginForm button {
-        padding: 10px;
-        background: #50c878;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-</style>
+                // Highlight the middle item
+                const middleIndex = Math.floor(totalItems / 2);
+                animationInner.children[middleIndex].classList.add('highlight');
 
-<script>
-document.getElementById('loginForm').onsubmit = async function(e) {
-    e.preventDefault();
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+                animationContainer.style.display = 'flex';
 
-    try {
-        const response = await fetch('/static/users.json');
-        if (!response.ok) {
-            throw new Error('Failed to fetch user data.');
+                // Set the animation
+                animationInner.style.animation = `spin 3s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
+
+                // Reveal result after animation ends
+                setTimeout(() => {
+                    animationContainer.style.display = 'none';
+                    const winningItem = getRandomItemByChance(items);
+                    alert(`You won: ${winningItem.name}`);
+                }, 3000); // Match the animation duration
+            };
+        });
+
+        function getRandomItemByChance(items) {
+            const totalChance = items.reduce((sum, item) => sum + item.chance, 0);
+            const random = Math.random() * totalChance;
+            let cumulativeChance = 0;
+
+            for (const item of items) {
+                cumulativeChance += item.chance;
+                if (random < cumulativeChance) {
+                    return item;
+                }
+            }
         }
-        const users = await response.json();
-        const user = users.find(u => u.username === username && u.password === password);
 
-        if (user) {
-            user.money = typeof user.money === 'number' ? user.money : 0;
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('game').style.display = 'block';
-            updateUI(user);
-        } else {
-            alert('Invalid username or password.');
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            fetch('/static/users.json')
+            .then(response => {
+                if (!response.ok) {
+                throw new Error('Failed to fetch user data.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const users = data;
+                const user = users.find(u => u.username === username && u.password === password);
+
+                if (user) {
+                user.money = typeof user.money === 'number' ? user.money : 0;
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('game').style.display = 'block';
+                updateUI(user);
+                } else {
+                alert('Invalid username or password.');
+                }
+            })
+            .catch(error => {
+                console.error('Error during login:', error);
+                alert('An error occurred while trying to log in.');
+            });
         }
-    } catch (error) {
-        console.error('Error during login:', error);
-        alert('An error occurred while trying to log in.');
-    }
-};
 
-function updateUI(user) {
-    document.getElementById('balance').innerText = `Balance: $${user.money}`;
-}
+        function updateUI(user) {
+            document.getElementById('balance').innerText = `Balance: $${user.money}`;
+        }
 
-function placeBet() {
-    const betAmount = parseFloat(document.getElementById('bet-amount').value);
-    if (isNaN(betAmount) || betAmount <= 0 || betAmount > MAX_BET) {
-        alert(`Please enter a valid bet amount greater than 0 and up to $${MAX_BET}.`);
-        return;
-    }
-}
+        function placeBet() {
+            const betAmount = parseFloat(document.getElementById('bet-amount').value);
+            if (isNaN(betAmount) || betAmount <= 0 || betAmount > MAX_BET) {
+            alert(`Please enter a valid bet amount greater than 0 and up to $${MAX_BET}.`);
+            return;
+            }
+        }
 
-// Check if user is logged in
-if (sessionStorage.getItem('username')) {
-    document.getElementById('loginModal').style.display = 'none';
-}
-</script>
-</script>
-</form>
-</div>
+    login();
+    </script>
+</body>
+</html>
