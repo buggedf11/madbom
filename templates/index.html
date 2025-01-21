@@ -127,17 +127,21 @@
 
         /* Animation Styles */
         .animation-container {
+            position: fixed; /* Keeps the container fixed relative to the viewport */
+            top: 50%; /* Aligns the container vertically to the middle */
+            left: 50%; /* Aligns the container horizontally to the middle */
+            transform: translate(-50%, -50%); /* Ensures the center of the container is aligned to the center of the viewport */
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            max-width: 600px;
-            height: 120px;
-            background: #282846;
-            border: 3px solid #50c878;
-            border-radius: 10px;
+            width: 80%; /* Ensures the container is responsive */
+            max-width: 600px; /* Adds a max width for larger screens */
+            height: 120px; /* Keeps the height fixed for consistent layout */
+            background: #282846; /* Background color */
+            border: 3px solid #50c878; /* Green border */
+            border-radius: 10px; /* Rounds the corners */
             overflow: hidden;
-            z-index: 100;
+            z-index: 1000; /* Keeps it above all other content */
         }
 
         .animation-inner {
@@ -168,12 +172,11 @@
             100% { transform: translateX(-100%); } /* Move the items to the left by 100% of their width */
         }
 
-    .inventory-item img {
-        width: 100px; /* Set a fixed width */
-        height: 100px; /* Set a fixed height */
-        object-fit: cover; /* Ensure the image covers the area without distortion */
-    }
-</style>
+        .inventory-item img {
+            width: 100px; /* Set a fixed width */
+            height: 100px; /* Set a fixed height */
+            object-fit: cover; /* Ensure the image covers the area without distortion */
+        }
     </style>
 </head>
 <body>
@@ -183,9 +186,9 @@
             <span id="balance">Balance: $0</span>
         </div>
         <nav>
-            <a href="#">Home</a>
-            <a href="#cases">Cases</a>
-            <a href="#inventory">Inventory</a>
+            <a href="/" >Home</a>
+            <a href="#cases" id="cases-link">Cases</a>
+            <a href="#inventory" id="inventory-link">Inventory</a>
         </nav>
     </header>
 
@@ -193,21 +196,21 @@
         <h2>Login</h2>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
-        <button onclick="login()">Login</button>
+        <button onclick="handleLogin()">Login</button>
     </div>
     <div id="game" class="container" style="display: none;">
         <section id="cases">
             <h2>Available Cases</h2>
             <div class="cases-grid">
                 <div class="case">
-                    <img src="/static/case/royal.avif" alt="Case Image">
+                    <img src="static/case/Stans Dads Bank/royal.avif" alt="Case Image">
                     <h3>Stan's Dad's Bank</h3>
                     <p>Price: $50</p>
                     <button class="preview-button" data-case="royal">Preview</button>
                     <button class="open-case-button" data-price="50">Open Case</button>
                 </div>
                 <div class="case">
-                    <img src="/static/case/supman.avif" alt="Case Image">
+                    <img src="static/case/Rons Prison/supman.avif" alt="Case Image">
                     <h3>Ron's Prison</h3>
                     <p>Price: $75</p>
                     <button class="preview-button" data-case="gold">Preview</button>
@@ -233,15 +236,24 @@
         </div>
     </div>
 
+    <section id="inventory" class="container" style="display: none;">
+        <h2>Your Inventory</h2>
+        <div class="inventory-grid">
+            <!-- Items will be populated here -->
+        </div>
+    </section>
+
     <script>
+        let user;
+        let users;
         const caseItems = {
             royal: [
-                { name: "Fittty", img: "/static/case/fitty.png", chance: 0.7 },
-                { name: "Stan's Huzz'", img: "static/case/stans Huz.png", chance: 0.3 }
+            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", chance: 0.7, value: 80 },
+            { name: "Stans Huzz'", img: "static/case/Stans Dads Bank/stans Huz.png", chance: 0.3, value: 20 }
             ],
             gold: [
-                { name: "Ron Pork", img: "/static/case/ronpnose.png", chance: 0.6 },
-                { name: "Chub Master", img: "/static/case/chubmaster.png", chance: 0.4 }
+            { name: "Ron Pork", img: "static/case/Rons Prison/ronpnose.png", chance: 0.6, value: 15 },
+            { name: "Chub Master", img: "static/case/Rons Prison/chubmaster.png", chance: 0.4, value: 25 }
             ]
         };
 
@@ -266,53 +278,51 @@
 
         // Open Case Logic with Animation
         document.querySelectorAll('.open-case-button').forEach(button => {
-            button.onclick = () => {
-                const casePrice = parseFloat(button.getAttribute('data-price'));
-                let userBalance = parseFloat(document.getElementById('balance').innerText.replace('Balance: $', ''));
+        button.onclick = () => {
+            const casePrice = parseFloat(button.getAttribute('data-price'));
+            let userBalance = parseFloat(document.getElementById('balance').innerText.replace('Balance: $', ''));
 
-                if (userBalance < casePrice) {
-                    alert('Insufficient balance!');
-                    return;
-                }
+            if (userBalance < casePrice) {
+                alert('Insufficient balance!');
+                return;
+            }
 
-                userBalance -= casePrice;
-                document.getElementById('balance').innerText = `Balance: $${userBalance}`;
+            userBalance -= casePrice;
+            document.getElementById('balance').innerText = `Balance: $${userBalance}`;
 
-                const caseType = button.previousElementSibling.getAttribute('data-case');
-                const items = caseItems[caseType];
+            const caseType = button.previousElementSibling.getAttribute('data-case');
+            const items = caseItems[caseType];
 
-                // Display animation
-                const animationContainer = document.getElementById('animation');
-                const animationInner = animationContainer.querySelector('.animation-inner');
-                animationInner.innerHTML = ''; // Clear previous items
+            // Display animation code remains the same...
+            const animationContainer = document.getElementById('animation');
+            const animationInner = animationContainer.querySelector('.animation-inner');
+            animationInner.innerHTML = '';
 
-                // Populate animation with enough items
-                const totalItems = 20; // Define enough items for smooth scrolling
-                for (let i = 0; i < totalItems; i++) {
-                    const randomItem = items[Math.floor(Math.random() * items.length)];
-                    const itemDiv = document.createElement('div');
-                    itemDiv.classList.add('animation-item');
-                    itemDiv.innerHTML = `<img src="${randomItem.img}" alt="${randomItem.name}">`;
-                    animationInner.appendChild(itemDiv);
-                }
+            const totalItems = 20;
+            for (let i = 0; i < totalItems; i++) {
+                const randomItem = items[Math.floor(Math.random() * items.length)];
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('animation-item');
+                itemDiv.innerHTML = `<img src="${randomItem.img}" alt="${randomItem.name}">`;
+                animationInner.appendChild(itemDiv);
+            }
 
-                // Highlight the middle item
-                const middleIndex = Math.floor(totalItems / 2);
-                animationInner.children[middleIndex].classList.add('highlight');
+            const middleIndex = Math.floor(totalItems / 2);
+            animationInner.children[middleIndex].classList.add('highlight');
 
-                animationContainer.style.display = 'flex';
+            animationContainer.style.display = 'flex';
+            animationInner.style.animation = `spin 3s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
 
-                // Set the animation
-                animationInner.style.animation = `spin 3s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
-
-                // Reveal result after animation ends
-                setTimeout(() => {
-                    animationContainer.style.display = 'none';
-                    const winningItem = getRandomItemByChance(items);
-                    alert(`You won: ${winningItem.name}`);
-                }, 3000); // Match the animation duration
-            };
-        });
+            // Modified result handling
+            setTimeout(() => {
+                animationContainer.style.display = 'none';
+                const winningItem = getRandomItemByChance(items);
+                alert(`You won: ${winningItem.name}`);
+                // Save the user data with the new item and updated money
+                saveUsers(winningItem, userBalance);
+            }, 3000);
+        };
+    });
 
         function getRandomItemByChance(items) {
             const totalChance = items.reduce((sum, item) => sum + item.chance, 0);
@@ -368,8 +378,165 @@
             return;
             }
         }
+        function saveUsers(wonItem, newBalance) {
+            if (!user || !users) {
+                console.error('No user data available');
+                return;
+            }
 
-    login();
+            // Update the current user's data
+            user.money = newBalance;
+            
+            if (!user.inventory) {
+                user.inventory = [];
+            }
+            
+            if (wonItem) {
+                user.inventory.push({
+                    name: wonItem.name,
+                    img: wonItem.img,
+                    value: wonItem.value,
+                    obtainedAt: new Date().toISOString()
+                });
+            }
+
+            // Find and update the user in the users array
+            const idx = users.findIndex(u => u.username === user.username);
+            if (idx !== -1) {
+                users[idx] = user;
+            }
+
+            // Send updated data to the server
+            fetch('/updateUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: user.username,
+                    money: user.money,
+                    inventory: user.inventory
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update user data');
+                }
+                return response.json();
+            })
+            .catch(error => {
+                console.error('Error updating user data:', error);
+                // Fallback to localStorage if server update fails
+                localStorage.setItem('userData', JSON.stringify(user));
+            });
+        }
+
+    // Remove duplicate login function and keep only this one
+    function handleLogin() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        fetch('/static/users.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                users = data;
+                user = users.find(u => u.username === username && u.password === password);
+
+                if (user) {
+                    user.money = typeof user.money === 'number' ? user.money : 0;
+                    user.inventory = Array.isArray(user.inventory) ? user.inventory : [];
+                    document.getElementById('login').style.display = 'none';
+                    document.getElementById('game').style.display = 'block';
+                    updateUI(user);
+                } else {
+                    alert('Invalid username or password.');
+                }
+            })
+            .catch(error => {
+                console.error('Error during login:', error);
+                alert('An error occurred while trying to log in.');
+            });
+    }
+
+    function displayInventory() {
+        const inventorySection = document.getElementById('inventory');
+        const inventoryGrid = inventorySection.querySelector('.inventory-grid');
+
+        // Group items by name and count duplicates
+        const groupedItems = user.inventory.reduce((acc, item) => {
+            const existingItem = acc.find(i => i.name === item.name);
+            if (existingItem) {
+                existingItem.count++;
+            } else {
+                acc.push({ ...item, count: 1 });
+            }
+            return acc;
+        }, []);
+
+        // Generate HTML for grouped items
+        inventoryGrid.innerHTML = groupedItems.map(item => `
+            <div class="inventory-item" style="display: inline-block; margin-right: 10px;" onclick="displayFullSizeItem('${item.name}')">
+                <img src="${item.img}" alt="${item.name}">
+                <h4>${item.name}</h4>
+                <p>Count: ${item.count}</p>
+            </div>
+        `).join('');
+
+        document.getElementById('cases').style.display = 'none';
+        inventorySection.style.display = 'block';
+    }
+
+    function displayFullSizeItem(itemName) {
+        const item = user.inventory.find(i => i.name === itemName);
+        if (!item) return;
+
+        const fullSizeModal = document.createElement('div');
+        fullSizeModal.classList.add('modal');
+        fullSizeModal.style.display = 'block';
+        fullSizeModal.innerHTML = `
+            <div class="modal-content" style="width: 50%; max-width: 250px;">
+                <span class="close">&times;</span>
+                <img src="${item.img}" alt="${item.name}" style="width: 200px; height: 200px; object-fit: contain;">
+                <h2>${item.name}</h2>
+                <div style="text-align: center;">
+                    <button onclick="sellItem(\`${item.name}\`, ${item.value})" style="background: #50c878; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px 0; transition: background 0.3s;">Sell for $${item.value}</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(fullSizeModal);
+
+        fullSizeModal.querySelector('.close').onclick = () => {
+            fullSizeModal.style.display = 'none';
+            document.body.removeChild(fullSizeModal);
+        };
+    }
+
+    function sellItem(itemName, itemValue) {
+        const itemIndex = user.inventory.findIndex(item => item.name === itemName);
+        if (itemIndex !== -1) {
+            const item = user.inventory[itemIndex];
+            user.inventory.splice(itemIndex, 1);
+            user.money += item.value; // Use the item's value for selling
+            updateUI(user);
+            saveUsers(null, user.money);
+            alert(`${itemName} sold for $${item.value}`);
+            displayInventory();
+        }
+    }
+
+    // Add event listener to inventory link
+    document.getElementById('inventory-link').addEventListener('click', displayInventory);
+        // Add event listener to cases link
+        document.getElementById('cases-link').addEventListener('click', () => {
+            document.getElementById('inventory').style.display = 'none';
+            document.getElementById('cases').style.display = 'block';
+        });
     </script>
 </body>
 </html>

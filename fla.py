@@ -77,11 +77,14 @@ def update_bet_limits():
 
 @app.route('/updateUser', methods=['POST'])
 def update_user():
-    """Update user information."""
+    """Update user information including inventory."""
     try:
         data = request.get_json()
         if not isinstance(data, list):
-            return jsonify({'error': 'Invalid data format: Expected a list'}), 400
+            # Handle single user update
+            if not isinstance(data, dict):
+                return jsonify({'error': 'Invalid data format'}), 400
+            data = [data]
 
         users = load_json_file('static/users.json')
         if users is None:
@@ -91,6 +94,7 @@ def update_user():
         for item in data:
             username = item.get('username')
             money = item.get('money')
+            inventory = item.get('inventory')
 
             if not username or not isinstance(money, (int, float)):
                 return jsonify({'error': 'Invalid user data: username must be string and money must be number'}), 400
@@ -100,10 +104,12 @@ def update_user():
                 return jsonify({'error': f'User {username} not found'}), 404
 
             user['money'] = money
+            if inventory is not None:
+                user['inventory'] = inventory
             updated_users.append(user)
 
         save_json_file('static/users.json', users)
-        return jsonify({'success': 'Users updated successfully', 'updatedUsers': updated_users}), 200
+        return jsonify({'success': True, 'updatedUsers': updated_users}), 200
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500

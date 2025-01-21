@@ -10,8 +10,33 @@
     "username": "Alex",
     "password": "GEMnec2152",
     "bank": 0,
-    "money": 7000,
-    "inventory": []
+    "money": 6545,
+    "inventory": [
+      {
+        "name": "Ron Pork",
+        "img": "static/case/Rons Prison/ronpnose.png",
+        "value": 15,
+        "obtainedAt": "2025-01-21T00:50:20.414Z"
+      },
+      {
+        "name": "Stans Huzz",
+        "img": "static/case/Stans Dads Bank/stans Huz.png",
+        "value": 20,
+        "obtainedAt": "2025-01-21T00:50:29.582Z"
+      },
+      {
+        "name": "Fittty",
+        "img": "static/case/Stans Dads Bank/fitty.png",
+        "value": 80,
+        "obtainedAt": "2025-01-21T01:02:36.081Z"
+      },
+      {
+        "name": "Chub Master",
+        "img": "static/case/Rons Prison/chubmaster.png",
+        "value": 25,
+        "obtainedAt": "2025-01-21T01:02:41.736Z"
+      }
+    ]
   },
   {
     "username": "Fatty",
