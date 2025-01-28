@@ -177,6 +177,19 @@
             height: 100px; /* Set a fixed height */
             object-fit: cover; /* Ensure the image covers the area without distortion */
         }
+
+    .animation-item.common {
+        box-shadow: 0 0 10px 2px #ffffff;
+    }
+    .animation-item.rare {
+        box-shadow: 0 0 10px 2px #4286f4;
+    }
+    .animation-item.epic {
+         box-shadow: 0 0 10px 2px #9932cc;
+    }
+    .animation-item.legendary {
+         box-shadow: 0 0 10px 2px #ffd700;
+     }
     </style>
 </head>
 <body>
@@ -238,7 +251,7 @@
 
     <section id="inventory" class="container" style="display: none;">
         <h2>Your Inventory</h2>
-        <div class="inventory-grid">
+        <div class="inventory-grid" style="display: flex; flex-wrap: wrap;">
             <!-- Items will be populated here -->
         </div>
     </section>
@@ -246,16 +259,36 @@
     <script>
         let user;
         let users;
+        const rarityChances = {
+            common: 0.60,    // 60% chance
+            rare: 0.25,      // 25% chance
+            epic: 0.10,      // 10% chance
+            legendary: 0.05  // 5% chance
+        };
+
         const caseItems = {
             royal: [
-            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", chance: 0.7, value: 80 },
-            { name: "Stans Huzz'", img: "static/case/Stans Dads Bank/stans Huz.png", chance: 0.3, value: 20 }
+            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", value: 80, rarity: "common"},
+            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", value: 80, rarity: "rare"},
+            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", value: 80, rarity: "epic"},
+            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", value: 80, rarity: "legendary"},
+            { name: "Stans Huzz", img: "static/case/Stans Dads Bank/stans Huz.png", value: 20, rarity: "common"},
+            { name: "Stans Huzz", img: "static/case/Stans Dads Bank/stans Huz.png", value: 20, rarity: "rare"},
+            { name: "Stans Huzz", img: "static/case/Stans Dads Bank/stans Huz.png", value: 20, rarity: "epic"},
+            { name: "Stans Huzz", img: "static/case/Stans Dads Bank/stans Huz.png", value: 20, rarity: "legendary"}
             ],
             gold: [
-            { name: "Ron Pork", img: "static/case/Rons Prison/ronpnose.png", chance: 0.6, value: 15 },
-            { name: "Chub Master", img: "static/case/Rons Prison/chubmaster.png", chance: 0.4, value: 25 }
+            { name: "Ron Pork", img: "static/case/Rons Prison/ronpnose.png", value: 15, rarity: "rare" },
+            { name: "Chub Master", img: "static/case/Rons Prison/chubmaster.png", value: 25, rarity: "epic" }
             ]
         };
+
+        // Make sure each case item has a rarity property and chance property that matches these values
+        for (let caseType in caseItems) {
+            caseItems[caseType].forEach(item => {
+                item.chance = rarityChances[item.rarity] || 0.60; // Default to common if rarity not found
+            });
+        }
 
         // Modal Logic
         const previewModal = document.getElementById('previewModal');
@@ -293,7 +326,17 @@
             const caseType = button.previousElementSibling.getAttribute('data-case');
             const items = caseItems[caseType];
 
-            // Display animation code remains the same...
+            // First, determine the rarity based on chances
+            let selectedItem;
+            while (!selectedItem) {
+                const randomRarity = determineRarity();
+                const possibleItems = items.filter(item => item.rarity === randomRarity);
+                if (possibleItems.length > 0) {
+                    selectedItem = possibleItems[Math.floor(Math.random() * possibleItems.length)];
+                }
+            }
+
+            // Create animation items
             const animationContainer = document.getElementById('animation');
             const animationInner = animationContainer.querySelector('.animation-inner');
             animationInner.innerHTML = '';
@@ -302,8 +345,10 @@
             for (let i = 0; i < totalItems; i++) {
                 const randomItem = items[Math.floor(Math.random() * items.length)];
                 const itemDiv = document.createElement('div');
-                itemDiv.classList.add('animation-item');
-                itemDiv.innerHTML = `<img src="${randomItem.img}" alt="${randomItem.name}">`;
+                itemDiv.classList.add('animation-item', randomItem.rarity);
+                itemDiv.innerHTML = `
+                    <img src="${randomItem.img}" alt="${randomItem.name}">
+                `;
                 animationInner.appendChild(itemDiv);
             }
 
@@ -313,16 +358,76 @@
             animationContainer.style.display = 'flex';
             animationInner.style.animation = `spin 3s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
 
-            // Modified result handling
             setTimeout(() => {
                 animationContainer.style.display = 'none';
-                const winningItem = getRandomItemByChance(items);
-                alert(`You won: ${winningItem.name}`);
-                // Save the user data with the new item and updated money
-                saveUsers(winningItem, userBalance);
+                alert(`You won: ${selectedItem.name} (${selectedItem.rarity.toUpperCase()})`);
+                saveUsers(selectedItem, userBalance);
             }, 3000);
         };
     });
+
+    // Add this new function to determine rarity based on chances
+    function determineRarity() {
+        const random = Math.random();
+        if (random < rarityChances.legendary) return 'legendary';
+        if (random < rarityChances.legendary + rarityChances.epic) return 'epic';
+        if (random < rarityChances.legendary + rarityChances.epic + rarityChances.rare) return 'rare';
+        return 'common';
+    }
+
+    function saveUsers(wonItem, newBalance) {
+        if (!user || !users) {
+            console.error('No user data available');
+            return;
+        }
+
+        user.money = newBalance;
+        
+        if (!user.inventory) {
+            user.inventory = [];
+        }
+        
+        if (wonItem) {
+            user.inventory.push({
+                name: wonItem.name,
+                img: wonItem.img,
+                value: wonItem.value,
+                rarity: wonItem.rarity, // Ensure rarity is included
+                obtainedAt: new Date().toISOString()
+            });
+        }
+
+        // Find and update the user in the users array
+        const idx = users.findIndex(u => u.username === user.username);
+        if (idx !== -1) {
+            users[idx] = user;
+        }
+
+        // Send updated data to the server
+        fetch('/updateUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: user.username,
+                money: user.money,
+                inventory: user.inventory
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to update user data');
+            }
+            return response.json();
+        })
+        .catch(error => {
+            console.error('Error updating user data:', error);
+            // Fallback to localStorage if server update fails
+            localStorage.setItem('userData', JSON.stringify(user));
+        });
+    }
+
 
         function getRandomItemByChance(items) {
             const totalChance = items.reduce((sum, item) => sum + item.chance, 0);
@@ -337,46 +442,35 @@
             }
         }
 
-        function login() {
+        function handleLogin() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
             fetch('/static/users.json')
-            .then(response => {
-                if (!response.ok) {
-                throw new Error('Failed to fetch user data.');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const users = data;
-                const user = users.find(u => u.username === username && u.password === password);
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch user data.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    users = data;
+                    user = users.find(u => u.username === username && u.password === password);
 
-                if (user) {
-                user.money = typeof user.money === 'number' ? user.money : 0;
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('game').style.display = 'block';
-                updateUI(user);
-                } else {
-                alert('Invalid username or password.');
-                }
-            })
-            .catch(error => {
-                console.error('Error during login:', error);
-                alert('An error occurred while trying to log in.');
-            });
-        }
-
-        function updateUI(user) {
-            document.getElementById('balance').innerText = `Balance: $${user.money}`;
-        }
-
-        function placeBet() {
-            const betAmount = parseFloat(document.getElementById('bet-amount').value);
-            if (isNaN(betAmount) || betAmount <= 0 || betAmount > MAX_BET) {
-            alert(`Please enter a valid bet amount greater than 0 and up to $${MAX_BET}.`);
-            return;
-            }
+                    if (user) {
+                        user.money = typeof user.money === 'number' ? user.money : 0;
+                        user.inventory = Array.isArray(user.inventory) ? user.inventory : [];
+                        document.getElementById('login').style.display = 'none';
+                        document.getElementById('game').style.display = 'block';
+                        updateUI(user);
+                    } else {
+                        alert('Invalid username or password.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during login:', error);
+                    alert('An error occurred while trying to log in.');
+                });
         }
         function saveUsers(wonItem, newBalance) {
             if (!user || !users) {
@@ -396,6 +490,7 @@
                     name: wonItem.name,
                     img: wonItem.img,
                     value: wonItem.value,
+                    rarity: wonItem.rarity, // Ensure rarity is included
                     obtainedAt: new Date().toISOString()
                 });
             }
@@ -467,23 +562,39 @@
         const inventorySection = document.getElementById('inventory');
         const inventoryGrid = inventorySection.querySelector('.inventory-grid');
 
-        // Group items by name and count duplicates
+        // Group items by name, count duplicates, and include rarity
         const groupedItems = user.inventory.reduce((acc, item) => {
-            const existingItem = acc.find(i => i.name === item.name);
-            if (existingItem) {
-                existingItem.count++;
+            const key = `${item.name}-${item.rarity}`;
+            if (!acc[key]) {
+                acc[key] = { ...item, count: 1 };
             } else {
-                acc.push({ ...item, count: 1 });
+                acc[key].count++;
             }
             return acc;
-        }, []);
+        }, {});
 
-        // Generate HTML for grouped items
-        inventoryGrid.innerHTML = groupedItems.map(item => `
-            <div class="inventory-item" style="display: inline-block; margin-right: 10px;" onclick="displayFullSizeItem('${item.name}')">
+        // Generate HTML for grouped items with rarity-based aura
+        inventoryGrid.innerHTML = Object.values(groupedItems).map(item => `
+            <div class="inventory-item" 
+                style="display: inline-block; 
+                       margin-right: 10px; 
+                       cursor: pointer;
+                       padding: 10px;
+                       border-radius: 8px;
+                       box-shadow: ${
+                           item.rarity === 'legendary' ? '0 0 10px 2px #ffd700' :
+                           item.rarity === 'epic' ? '0 0 10px 2px #9932cc' :
+                           item.rarity === 'rare' ? '0 0 10px 2px #4286f4' :
+                           '0 0 10px 2px #ffffff'}" 
+                onclick="displayFullSizeItem('${item.name}', '${item.rarity}')">
                 <img src="${item.img}" alt="${item.name}">
                 <h4>${item.name}</h4>
                 <p>Count: ${item.count}</p>
+                <p style="color: ${
+                    item.rarity === 'legendary' ? '#ffd700' :
+                    item.rarity === 'epic' ? '#9932cc' :
+                    item.rarity === 'rare' ? '#4286f4' :
+                    '#ffffff'}">${item.rarity.toUpperCase()}</p>
             </div>
         `).join('');
 
@@ -491,8 +602,8 @@
         inventorySection.style.display = 'block';
     }
 
-    function displayFullSizeItem(itemName) {
-        const item = user.inventory.find(i => i.name === itemName);
+    function displayFullSizeItem(itemName, itemRarity, itemIndex) {
+        const item = user.inventory.find(i => i.name === itemName && i.rarity === itemRarity);
         if (!item) return;
 
         const fullSizeModal = document.createElement('div');
@@ -503,8 +614,9 @@
                 <span class="close">&times;</span>
                 <img src="${item.img}" alt="${item.name}" style="width: 200px; height: 200px; object-fit: contain;">
                 <h2>${item.name}</h2>
+                <p>Rarity: ${item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)}</p>
                 <div style="text-align: center;">
-                    <button onclick="sellItem(\`${item.name}\`, ${item.value})" style="background: #50c878; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px 0; transition: background 0.3s;">Sell for $${item.value}</button>
+                    <button onclick="sellItem('${item.name}', ${item.value})" style="background: #50c878; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px 0; transition: background 0.3s;">Sell for $${item.value}</button>
                 </div>
             </div>
         `;
@@ -528,6 +640,10 @@
             alert(`${itemName} sold for $${item.value}`);
             displayInventory();
         }
+    }
+
+    function updateUI(user) {
+        document.getElementById('balance').innerText = `Balance: $${user.money}`;
     }
 
     // Add event listener to inventory link
