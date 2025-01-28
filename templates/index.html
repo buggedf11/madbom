@@ -179,13 +179,13 @@
         }
 
     .animation-item.common {
-        box-shadow: 0 0 10px 2px #ffffff;
+        box-shadow: 0 0 10px 2px #9c9c9c;
     }
     .animation-item.rare {
-        box-shadow: 0 0 10px 2px #4286f4;
+        box-shadow: 0 0 10px 2px #2c70dd;
     }
     .animation-item.epic {
-         box-shadow: 0 0 10px 2px #9932cc;
+         box-shadow: 0 0 10px 2px #9f2cd8;
     }
     .animation-item.legendary {
          box-shadow: 0 0 10px 2px #ffd700;
@@ -268,18 +268,26 @@
 
         const caseItems = {
             royal: [
-            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", value: 80, rarity: "common"},
-            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", value: 80, rarity: "rare"},
-            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", value: 80, rarity: "epic"},
-            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", value: 80, rarity: "legendary"},
-            { name: "Stans Huzz", img: "static/case/Stans Dads Bank/stans Huz.png", value: 20, rarity: "common"},
-            { name: "Stans Huzz", img: "static/case/Stans Dads Bank/stans Huz.png", value: 20, rarity: "rare"},
-            { name: "Stans Huzz", img: "static/case/Stans Dads Bank/stans Huz.png", value: 20, rarity: "epic"},
-            { name: "Stans Huzz", img: "static/case/Stans Dads Bank/stans Huz.png", value: 20, rarity: "legendary"}
+            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", value: 100, rarity: "common"},
+            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", value: 250, rarity: "rare"},
+            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", value: 500, rarity: "epic"},
+            { name: "Fittty", img: "static/case/Stans Dads Bank/fitty.png", value: 1000, rarity: "legendary"},
+            
+            { name: "Stans Huzz", img: "static/case/Stans Dads Bank/stans Huz.png", value: 100, rarity: "common"},
+            { name: "Stans Huzz", img: "static/case/Stans Dads Bank/stans Huz.png", value: 250, rarity: "rare"},
+            { name: "Stans Huzz", img: "static/case/Stans Dads Bank/stans Huz.png", value: 500, rarity: "epic"},
+            { name: "Stans Huzz", img: "static/case/Stans Dads Bank/stans Huz.png", value: 1000, rarity: "legendary"}
             ],
             gold: [
-            { name: "Ron Pork", img: "static/case/Rons Prison/ronpnose.png", value: 15, rarity: "rare" },
-            { name: "Chub Master", img: "static/case/Rons Prison/chubmaster.png", value: 25, rarity: "epic" }
+            { name: "Ron Pork", img: "static/case/Rons Prison/ronpnose.png", value: 100, rarity: "common" },
+            { name: "Ron Pork", img: "static/case/Rons Prison/ronpnose.png", value: 250, rarity: "rare" },
+            { name: "Ron Pork", img: "static/case/Rons Prison/ronpnose.png", value: 500, rarity: "epic" },
+            { name: "Ron Pork", img: "static/case/Rons Prison/ronpnose.png", value: 1000, rarity: "legendary" },
+            
+            { name: "Chub Master", img: "static/case/Rons Prison/chubmaster.png", value: 100, rarity: "common" },
+            { name: "Chub Master", img: "static/case/Rons Prison/chubmaster.png", value: 250, rarity: "rare" },
+            { name: "Chub Master", img: "static/case/Rons Prison/chubmaster.png", value: 500, rarity: "epic" },
+            { name: "Chub Master", img: "static/case/Rons Prison/chubmaster.png", value: 1000, rarity: "legendary" }
             ]
         };
 
@@ -562,62 +570,63 @@
         const inventorySection = document.getElementById('inventory');
         const inventoryGrid = inventorySection.querySelector('.inventory-grid');
 
-        // Group items by name, count duplicates, and include rarity
         const groupedItems = user.inventory.reduce((acc, item) => {
             const key = `${item.name}-${item.rarity}`;
             if (!acc[key]) {
-                acc[key] = { ...item, count: 1 };
+            acc[key] = { ...item, count: 1 };
             } else {
-                acc[key].count++;
+            acc[key].count++;
             }
             return acc;
         }, {});
 
-        // Generate HTML for grouped items with rarity-based aura
         inventoryGrid.innerHTML = Object.values(groupedItems).map(item => `
             <div class="inventory-item" 
-                style="display: inline-block; 
-                       margin-right: 10px; 
-                       cursor: pointer;
-                       padding: 10px;
-                       border-radius: 8px;
-                       box-shadow: ${
-                           item.rarity === 'legendary' ? '0 0 10px 2px #ffd700' :
-                           item.rarity === 'epic' ? '0 0 10px 2px #9932cc' :
-                           item.rarity === 'rare' ? '0 0 10px 2px #4286f4' :
-                           '0 0 10px 2px #ffffff'}" 
-                onclick="displayFullSizeItem('${item.name}', '${item.rarity}')">
-                <img src="${item.img}" alt="${item.name}">
-                <h4>${item.name}</h4>
-                <p>Count: ${item.count}</p>
-                <p style="color: ${
-                    item.rarity === 'legendary' ? '#ffd700' :
-                    item.rarity === 'epic' ? '#9932cc' :
-                    item.rarity === 'rare' ? '#4286f4' :
-                    '#ffffff'}">${item.rarity.toUpperCase()}</p>
+            style="display: inline-block; 
+                   margin-right: 10px; 
+                   cursor: pointer;
+                   padding: 10px;
+                   border-radius: 8px;
+                   box-shadow: ${
+                   item.rarity === 'legendary' ? '0 0 10px 2px #ffd700' :
+                   item.rarity === 'epic' ? '0 0 10px 2px #9932cc' :
+                   item.rarity === 'rare' ? '0 0 10px 2px #4286f4' :
+                   '0 0 10px 2px #ffffff'}" 
+            onclick="displayFullSizeItem('${item.name}', '${item.rarity}')">
+            <img src="${item.img}" alt="${item.name}">
+            <h4>${item.name}</h4>
+            <p>Count: ${item.count}</p>
+            <p style="color: ${
+                item.rarity === 'legendary' ? '#ffd700' :
+                item.rarity === 'epic' ? '#9932cc' :
+                item.rarity === 'rare' ? '#4286f4' :
+                '#ffffff'}">${item.rarity.toUpperCase()}</p>
             </div>
         `).join('');
 
         document.getElementById('cases').style.display = 'none';
         inventorySection.style.display = 'block';
-    }
+        }
 
-    function displayFullSizeItem(itemName, itemRarity, itemIndex) {
+        let currentModal = null;
+
+        function displayFullSizeItem(itemName, itemRarity, itemIndex) {
         const item = user.inventory.find(i => i.name === itemName && i.rarity === itemRarity);
         if (!item) return;
 
         const fullSizeModal = document.createElement('div');
+        currentModal = fullSizeModal;
         fullSizeModal.classList.add('modal');
         fullSizeModal.style.display = 'block';
         fullSizeModal.innerHTML = `
             <div class="modal-content" style="width: 50%; max-width: 250px;">
-                <span class="close">&times;</span>
-                <img src="${item.img}" alt="${item.name}" style="width: 200px; height: 200px; object-fit: contain;">
-                <h2>${item.name}</h2>
-                <p>Rarity: ${item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)}</p>
-                <div style="text-align: center;">
-                    <button onclick="sellItem('${item.name}', ${item.value})" style="background: #50c878; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px 0; transition: background 0.3s;">Sell for $${item.value}</button>
-                </div>
+            <span class="close">&times;</span>
+            <img src="${item.img}" alt="${item.name}" style="width: 200px; height: 200px; object-fit: contain;">
+            <h2>${item.name}</h2>
+            <p>Rarity: ${item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)}</p>
+            <div style="text-align: center;">
+                <button onclick="sellItem('${item.name}', ${item.value})" style="background: #50c878; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px 0; transition: background 0.3s;">Sell for $${item.value}</button>
+            </div>
             </div>
         `;
 
@@ -626,32 +635,35 @@
         fullSizeModal.querySelector('.close').onclick = () => {
             fullSizeModal.style.display = 'none';
             document.body.removeChild(fullSizeModal);
+            currentModal = null;
         };
-    }
+        }
 
-    function sellItem(itemName, itemValue) {
+        function sellItem(itemName, itemValue) {
         const itemIndex = user.inventory.findIndex(item => item.name === itemName);
         if (itemIndex !== -1) {
             const item = user.inventory[itemIndex];
             user.inventory.splice(itemIndex, 1);
-            user.money += item.value; // Use the item's value for selling
+            user.money += item.value;
             updateUI(user);
             saveUsers(null, user.money);
-            alert(`${itemName} sold for $${item.value}`);
+            if (currentModal) {
+            currentModal.style.display = 'none';
+            document.body.removeChild(currentModal);
+            currentModal = null;
+            }
             displayInventory();
         }
-    }
+        }
 
-    function updateUI(user) {
+        function updateUI(user) {
         document.getElementById('balance').innerText = `Balance: $${user.money}`;
-    }
+        }
 
-    // Add event listener to inventory link
-    document.getElementById('inventory-link').addEventListener('click', displayInventory);
-        // Add event listener to cases link
+        document.getElementById('inventory-link').addEventListener('click', displayInventory);
         document.getElementById('cases-link').addEventListener('click', () => {
-            document.getElementById('inventory').style.display = 'none';
-            document.getElementById('cases').style.display = 'block';
+        document.getElementById('inventory').style.display = 'none';
+        document.getElementById('cases').style.display = 'block';
         });
     </script>
 </body>

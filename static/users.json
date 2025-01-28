@@ -10,65 +10,8 @@
     "username": "Alex",
     "password": "GEMnec2152",
     "bank": 0,
-    "money": 4310,
-    "inventory": [
-      {
-        "name": "Stans Huzz",
-        "img": "static/case/Stans Dads Bank/stans Huz.png",
-        "value": 20,
-        "rarity": "rare",
-        "obtainedAt": "2025-01-28T10:21:25.711Z"
-      },
-      {
-        "name": "Stans Huzz",
-        "img": "static/case/Stans Dads Bank/stans Huz.png",
-        "value": 20,
-        "rarity": "epic",
-        "obtainedAt": "2025-01-28T10:21:30.727Z"
-      },
-      {
-        "name": "Stans Huzz",
-        "img": "static/case/Stans Dads Bank/stans Huz.png",
-        "value": 20,
-        "rarity": "common",
-        "obtainedAt": "2025-01-28T10:21:35.647Z"
-      },
-      {
-        "name": "Stans Huzz",
-        "img": "static/case/Stans Dads Bank/stans Huz.png",
-        "value": 20,
-        "rarity": "common",
-        "obtainedAt": "2025-01-28T10:21:40.784Z"
-      },
-      {
-        "name": "Stans Huzz",
-        "img": "static/case/Stans Dads Bank/stans Huz.png",
-        "value": 20,
-        "rarity": "common",
-        "obtainedAt": "2025-01-28T10:21:46.391Z"
-      },
-      {
-        "name": "Stans Huzz",
-        "img": "static/case/Stans Dads Bank/stans Huz.png",
-        "value": 20,
-        "rarity": "rare",
-        "obtainedAt": "2025-01-28T10:21:51.447Z"
-      },
-      {
-        "name": "Chub Master",
-        "img": "static/case/Rons Prison/chubmaster.png",
-        "value": 25,
-        "rarity": "epic",
-        "obtainedAt": "2025-01-28T10:21:57.631Z"
-      },
-      {
-        "name": "Ron Pork",
-        "img": "static/case/Rons Prison/ronpnose.png",
-        "value": 15,
-        "rarity": "rare",
-        "obtainedAt": "2025-01-28T10:22:02.823Z"
-      }
-    ]
+    "money": 5010,
+    "inventory": []
   },
   {
     "username": "Fatty",
